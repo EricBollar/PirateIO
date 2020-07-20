@@ -19,14 +19,17 @@ class Player extends ObjectClass {
     this.camHeight = 10;
     this.camAngle = 0;
     this.camAngleStep = 0.01;
-    this.camRadius = 15;
+    this.camRadius = 20;
     this.prevCamX = 0;
+    this.speed = 0.1;
   }
 
   update(dt) {
     super.update(dt);
 
     this.calcShipAngle();
+    this.moveForward();
+    this.updateCamera(this.prevCamX);
 
     return null;
   }
@@ -40,13 +43,16 @@ class Player extends ObjectClass {
   }
 
   updateCamera(x) {
-    if (x - this.prevCamX !== 0) {
-      var amount = x - this.prevCamX;
-      this.camAngle += this.camAngleStep * amount;
-      this.camX = Math.sin(this.camAngle) * this.camRadius + this.x;
-      this.camZ = Math.cos(this.camAngle) * -this.camRadius + this.z;
-    }
+    var amount = x - this.prevCamX;
+    this.camAngle += this.camAngleStep * amount;
+    this.camX = Math.sin(this.camAngle) * this.camRadius + this.x;
+    this.camZ = Math.cos(this.camAngle) * -this.camRadius + this.z;
     this.prevCamX = x;
+  }
+
+  moveForward() {
+    this.x += Math.sin(this.angle) * this.speed;
+    this.z += Math.cos(this.angle) * this.speed;
   }
 
   calcShipAngle() {
@@ -73,6 +79,9 @@ class Player extends ObjectClass {
         this.currTurnRate = 0;
       }
     }
+    if (this.angle > 2 * Math.PI) {
+      this.angle -= 2 * Math.PI;
+    }
   }
     
   serializeForUpdate() {
@@ -93,6 +102,7 @@ class Player extends ObjectClass {
       camAngleStep: this.camAngleStep,
       camRadius: this.camRadius,
       prevCamX: this.prevCamX,
+      speed: this.speed,
     };
   }
 }

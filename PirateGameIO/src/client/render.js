@@ -1,7 +1,10 @@
 import { debounce } from 'throttle-debounce';
 import { getAsset } from './assets';
 import { getCurrentState } from './state';
-import * as THREE from './js/three.js';
+import * as THREE from './three/build/three.js';
+import { OBJLoader } from './three/examples/jsm/loaders/OBJLoader';
+import { MTLLoader } from './three/examples/jsm/loaders/MTLLoader';
+import { create } from 'lodash';
 
 const Constants = require('../shared/constants');
 
@@ -10,11 +13,10 @@ const { PLAYER_RADIUS, PLAYER_MAX_HP, BULLET_RADIUS, MAP_SIZE } = Constants;
 // Get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
 setCanvasDimensions();
+var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer({canvas});
 renderer.setSize(window.innerWidth, window.innerHeight - 32);
 document.body.appendChild(renderer.domElement);
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-var scene = new THREE.Scene();
 createScene();
 
 function setCanvasDimensions() {
@@ -33,8 +35,7 @@ function render() {
     return;
   }
 
-  // Draw background
-  //renderScene();
+  createScene();
 
   // Draw all bullets
   //bullets.forEach(renderBullet.bind(null, me));
@@ -44,8 +45,21 @@ function render() {
 }
 
 function createScene() {
-  camera.position.set(-10, 10, 0);
-  camera.lookAt(0, 0, 0);
+  while(scene.children.length > 0){ 
+    scene.remove(scene.children[0]); 
+  }
+  var mtlloader = new MTLLoader();
+  mtlloader.load("/assets/ship.mtl", function(materials) {
+    materials.preload();
+
+    var objloader = new OBJLoader();
+    objloader.setMaterials(materials);
+    objloader.load("/assets/ship.obj", function(object) {
+    object.position.set(0, 1, 0);
+    scene.add(object);
+  });
+  })
+  canvas.style.cursor = 'none';
   var geometry = new THREE.PlaneGeometry( 100, 100, 32 );
   var material = new THREE.MeshLambertMaterial( {color: 0x1873e7, side: THREE.DoubleSide} );
   var plane = new THREE.Mesh( geometry, material );
@@ -58,19 +72,16 @@ function createScene() {
 
 // Renders a ship at the given coordinates
 function renderPlayer(me, player) {
-  if (!scene.getObjectByName(player.id)) {
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
-    var material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-    var cube = new THREE.Mesh(geometry, material);
-    cube.name = "" + player.id;
-    cube.position.set(0, 1, 0);
-    scene.add(cube);
-  }
-  var cube = scene.getObjectByName("" + player.id);
+
+  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+  var cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
   const { x, z, angle, camX, camZ, camHeight } = player;
   cube.rotation.y = angle;
-  cube.translateZ(0.01);
-  camera.position.set(camX + cube.position.x, camHeight, camZ + cube.position.z);
+  cube.position.set(x, 1, z);
+  var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+  camera.position.set(camX, camHeight, camZ);
   camera.lookAt(cube.position);
   renderer.render(scene, camera);
 }
