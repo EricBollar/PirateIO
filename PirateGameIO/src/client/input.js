@@ -1,4 +1,4 @@
-import { shipTurnLeft, shipTurnRight } from './networking';
+import { shipTurnLeft, shipTurnRight, updateCamera } from './networking';
 
 function keyPress() {
   if (event.keyCode === 65) {
@@ -16,12 +16,18 @@ function keyUp() {
   }
 }
 
+function mouseMove() {
+  updateCamera(event.x);
+}
+
 export function startCapturingInput() {
+  window.addEventListener('mousemove', mouseMove);
   window.addEventListener('keydown', keyPress);
   window.addEventListener('keyup', keyUp);
 }
 
 export function stopCapturingInput() {
+  window.removeEventListener('mousemove', mouseMove);
   window.removeEventListener('keydown', keyPress);
   window.removeEventListener('keyup', keyUp);
 }

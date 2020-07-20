@@ -35,6 +35,7 @@ io.on('connection', socket => {
   socket.on(Constants.MSG_TYPES.JOIN_GAME, joinGame);
   socket.on(Constants.MSG_TYPES.SHIPTURNRIGHT, handleShipTurnRight);
   socket.on(Constants.MSG_TYPES.SHIPTURNLEFT, handleShipTurnLeft);
+  socket.on(Constants.MSG_TYPES.CAMERAUPDATE, handleCameraUpdate);
   socket.on('disconnect', onDisconnect);
 });
 
@@ -51,6 +52,10 @@ function handleShipTurnRight(bool) {
 
 function handleShipTurnLeft(bool) {
   game.shipTurnLeft(this, bool);
+}
+
+function handleCameraUpdate(pos) {
+  game.updateCamera(this, pos);
 }
 
 function onDisconnect() {

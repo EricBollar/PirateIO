@@ -34,17 +34,13 @@ function render() {
   }
 
   // Draw background
-  renderScene();
+  //renderScene();
 
   // Draw all bullets
   //bullets.forEach(renderBullet.bind(null, me));
 
   renderPlayer(me, me);
   others.forEach(renderPlayer.bind(null, me));
-}
-
-function renderScene() {
-  renderer.render(scene, camera);
 }
 
 function createScene() {
@@ -54,7 +50,7 @@ function createScene() {
   var material = new THREE.MeshLambertMaterial( {color: 0x1873e7, side: THREE.DoubleSide} );
   var plane = new THREE.Mesh( geometry, material );
   plane.position.set(0, 0, 1);
-  plane.rotation.set(0, 0, 0);
+  plane.rotation.set(Math.PI/2, 0, 0);
   scene.add( plane );
   var light = new THREE.HemisphereLight( 0x1ecbe1, 0x080820, 1 );
   scene.add( light );
@@ -62,40 +58,27 @@ function createScene() {
 
 // Renders a ship at the given coordinates
 function renderPlayer(me, player) {
-  var geometry;
-  var material;
-  var cube;
-  if (!scene.getObjectById(player.id)) {
-    geometry = new THREE.BoxGeometry(1, 1, 1);
-    material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-    cube = new THREE.Mesh(geometry, material);
-    cube.id = player.id;
+  if (!scene.getObjectByName(player.id)) {
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+    var cube = new THREE.Mesh(geometry, material);
+    cube.name = "" + player.id;
+    cube.position.set(0, 1, 0);
     scene.add(cube);
-  } else {
-    cube = scene.getObjectById(player.id);
   }
-
-  const { x, y, angle } = player;
-  console.log(angle * 180 / Math.PI);
+  var cube = scene.getObjectByName("" + player.id);
+  const { x, z, angle, camX, camZ, camHeight } = player;
   cube.rotation.y = angle;
-}
-
-function renderBullet(me, bullet) {
-  const { x, y } = bullet;
-  context.drawImage(
-    getAsset('bullet.svg'),
-    canvas.width / 2 + x - me.x - BULLET_RADIUS,
-    canvas.height / 2 + y - me.y - BULLET_RADIUS,
-    BULLET_RADIUS * 2,
-    BULLET_RADIUS * 2,
-  );
+  cube.translateZ(0.01);
+  camera.position.set(camX + cube.position.x, camHeight, camZ + cube.position.z);
+  camera.lookAt(cube.position);
+  renderer.render(scene, camera);
 }
 
 function renderMainMenu() {
   const t = Date.now() / 7500;
   const x = MAP_SIZE / 2 + 800 * Math.cos(t);
   const y = MAP_SIZE / 2 + 800 * Math.sin(t);
-  renderScene();
 }
 
 let renderInterval = setInterval(renderMainMenu, 1000 / 60);

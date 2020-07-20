@@ -14,11 +14,7 @@ class Game {
 
   addPlayer(socket, username) {
     this.sockets[socket.id] = socket;
-
-    // Generate a position to start this player at.
-    const x = Constants.MAP_SIZE * (0.25 + Math.random() * 0.5);
-    const y = Constants.MAP_SIZE * (0.25 + Math.random() * 0.5);
-    this.players[socket.id] = new Player(socket.id, username, x, y);
+    this.players[socket.id] = new Player(socket.id, username, 0, 0);
   }
 
   removePlayer(socket) {
@@ -35,6 +31,12 @@ class Game {
   shipTurnLeft(socket, bool) {
     if (this.players[socket.id]) {
       this.players[socket.id].turnLeft(bool);
+    }
+  }
+
+  updateCamera(socket, pos) {
+    if (this.players[socket.id]) {
+      this.players[socket.id].updateCamera(pos);
     }
   }
 

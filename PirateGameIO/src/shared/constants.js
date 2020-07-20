@@ -17,6 +17,7 @@ module.exports = Object.freeze({
     GAME_UPDATE: 'update',
     SHIPTURNRIGHT: 'shipturnright',
     SHIPTURNLEFT: 'shipturnleft',
+    CAMERAUPDATE: 'cameraupdate',
     GAME_OVER: 'dead',
   },
 });
