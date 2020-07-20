@@ -35,8 +35,6 @@ function render() {
     return;
   }
 
-  createScene();
-
   // Draw all bullets
   //bullets.forEach(renderBullet.bind(null, me));
 
@@ -45,20 +43,9 @@ function render() {
 }
 
 function createScene() {
-  while(scene.children.length > 0){ 
-    scene.remove(scene.children[0]); 
-  }
-  var mtlloader = new MTLLoader();
-  mtlloader.load("/assets/ship.mtl", function(materials) {
-    materials.preload();
-
-    var objloader = new OBJLoader();
-    objloader.setMaterials(materials);
-    objloader.load("/assets/ship.obj", function(object) {
-    object.position.set(0, 1, 0);
-    scene.add(object);
-  });
-  })
+  var keylight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+  keylight.position.set(-100, 0, 100);
+  scene.add(keylight);
   canvas.style.cursor = 'none';
   var geometry = new THREE.PlaneGeometry( 100, 100, 32 );
   var material = new THREE.MeshLambertMaterial( {color: 0x1873e7, side: THREE.DoubleSide} );
@@ -72,17 +59,29 @@ function createScene() {
 
 // Renders a ship at the given coordinates
 function renderPlayer(me, player) {
-
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
-  var material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-  var cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
-  const { x, z, angle, camX, camZ, camHeight } = player;
-  cube.rotation.y = angle;
-  cube.position.set(x, 1, z);
+  const { id, x, z, angle, camX, camZ, camHeight } = player;
+  console.log(id);
+  var ship;
+  if (scene.getObjectByName("" + id) === undefined) {
+    var mtlloader = new MTLLoader();
+    mtlloader.load("/assets/ship.mtl", function (materials) {
+      materials.preload();
+      var objloader = new OBJLoader();
+      objloader.setMaterials(materials);
+      objloader.load("/assets/ship.obj", function (object) {
+        object.scale.set(0.1, 0.1, 0.1);
+        object.name = "" + id;
+        scene.add(object);
+        ship = object;
+      });
+    })
+  }
+  ship = scene.getObjectByName("" + id);
+  ship.position.set(x, 1, z);
+  ship.rotation.y = angle;
   var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
   camera.position.set(camX, camHeight, camZ);
-  camera.lookAt(cube.position);
+  camera.lookAt(ship.position);
   renderer.render(scene, camera);
 }
 

@@ -19,7 +19,7 @@ class Player extends ObjectClass {
     this.camHeight = 10;
     this.camAngle = 0;
     this.camAngleStep = 0.01;
-    this.camRadius = 20;
+    this.camRadius = 15;
     this.prevCamX = 0;
     this.speed = 0.1;
   }
