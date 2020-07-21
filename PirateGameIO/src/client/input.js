@@ -1,10 +1,12 @@
-import { shipTurnLeft, shipTurnRight, updateCamera } from './networking';
+import { shipTurnLeft, shipTurnRight, updateCamera, shipFireCannon } from './networking';
 
 function keyPress() {
   if (event.keyCode === 65) {
     shipTurnLeft(true);
   } else if (event.keyCode === 68) {     
     shipTurnRight(true);
+  } else if (event.keyCode === 32) {
+    shipFireCannon();
   }
 }
 

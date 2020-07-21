@@ -43,3 +43,7 @@ export const shipTurnRight = throttle(20, bool => {
 export const updateCamera = throttle(20, pos => {
   socket.emit(Constants.MSG_TYPES.CAMERAUPDATE, pos);
 });
+
+export const shipFireCannon = throttle(20, pos => {
+  socket.emit(Constants.MSG_TYPES.SHIPFIRECANNON);
+});

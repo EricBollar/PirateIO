@@ -33,7 +33,7 @@ var newShip;
 var shipModel;
 
 function render() {
-  const { me, others } = getCurrentState();
+  const { me, others, cannonballs } = getCurrentState();
   if (!me) {
     return;
   }
@@ -41,15 +41,28 @@ function render() {
   if (newShip) {
     loadShip();
     newShip = false;
+    console.log(others);
+    console.log(cannonballs);
   }
 
   updatePlayer(me, me);
   others.forEach(updatePlayer.bind(null, me));
+  cannonballs.forEach(updateCannons.bind(null, me));
   updateCam(me);
   renderer.render(scene, camera);
   while (scene.children.length > 2) {
     scene.remove(scene.children[scene.children.length - 1]);
   }
+}
+
+function updateCannons(me, cannon) {
+  const {x, y, z, radius} = cannon;
+  console.log(x + " " + y + " " + z);
+  var geometry = new THREE.SphereGeometry( radius, 5, 5 );
+  var material = new THREE.MeshBasicMaterial( {color: 0xe77b18} );
+  var sphere = new THREE.Mesh( geometry, material );
+  scene.add( sphere );
+  sphere.position.set(x, y, z);
 }
 
 function updateCam(me) {

@@ -17,6 +17,7 @@ module.exports = Object.freeze({
     GAME_UPDATE: 'update',
     SHIPTURNRIGHT: 'shipturnright',
     SHIPTURNLEFT: 'shipturnleft',
+    SHIPFIRECANNON: 'shipfirecannon',
     CAMERAUPDATE: 'cameraupdate',
     GAME_OVER: 'dead',
   },

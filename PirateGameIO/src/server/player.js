@@ -1,5 +1,5 @@
 const ObjectClass = require('./object');
-const Bullet = require('./bullet');
+const Cannonball = require('./cannonball');
 const Constants = require('../shared/constants');
 
 class Player extends ObjectClass {
@@ -17,13 +17,17 @@ class Player extends ObjectClass {
     this.turnAccel = 0.02 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
-    this.camHeight = 30;
+    this.camHeight = 15;
     this.camAngle = 0;
     this.camAngleStep = 0.01;
-    this.camRadius = 30;
+    this.camRadius = 20;
     this.prevCamX = 0;
     this.speed = 0.1;
+    this.cannonSpeed = 0.1;
     this.created = 1;
+    this.reloadTime = 1;
+    this.fireCooldown = 0;
+    this.fire = false;
   }
 
   update(dt) {
@@ -34,7 +38,31 @@ class Player extends ObjectClass {
     this.moveForward();
     this.updateCamera(this.prevCamX);
 
+    this.fireCooldown -= dt;
+
+    if (this.fire) {
+      this.fire = false;
+      var cannonballs = [];
+      cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, -Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, -Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, -Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, Math.PI/3));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, -Math.PI/3));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, 4*Math.PI/3));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, -4*Math.PI/3));
+      return cannonballs
+    }
     return null;
+  }
+
+  fireCannon() {
+    if (this.fireCooldown <= 0) {
+      this.fireCooldown = this.reloadTime;
+      this.fire = true;
+    }
   }
 
   turnRight(bool) {

@@ -1,5 +1,7 @@
 import { updateLeaderboard } from './leaderboard';
 
+// The "current" state will always be RENDER_DELAY ms behind server time.
+// This makes gameplay smoother and lag less noticeable.
 const RENDER_DELAY = 100;
 
 const gameUpdates = [];
@@ -63,6 +65,7 @@ export function getCurrentState() {
     return {
       me: interpolateObject(baseUpdate.me, next.me, ratio),
       others: interpolateObjectArray(baseUpdate.others, next.others, ratio),
+      cannonballs: interpolateObjectArray(baseUpdate.cannonballs, next.cannonballs, ratio),
     };
   }
 }
@@ -74,7 +77,11 @@ function interpolateObject(object1, object2, ratio) {
 
   const interpolated = {};
   Object.keys(object1).forEach(key => {
-    interpolated[key] = object1[key] + (object2[key] - object1[key]) * ratio;
+    if (key === 'direction') {
+      interpolated[key] = interpolateDirection(object1[key], object2[key], ratio);
+    } else {
+      interpolated[key] = object1[key] + (object2[key] - object1[key]) * ratio;
+    }
   });
   return interpolated;
 }

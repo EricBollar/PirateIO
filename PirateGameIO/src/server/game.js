@@ -6,7 +6,7 @@ class Game {
   constructor() {
     this.sockets = {};
     this.players = {};
-    this.bullets = [];
+    this.cannonballs = [];
     this.lastUpdateTime = Date.now();
     this.shouldSendUpdate = false;
     setInterval(this.update.bind(this), 1000 / 60);
@@ -40,6 +40,12 @@ class Game {
     }
   }
 
+  shipFireCannon(socket) {
+    if (this.players[socket.id]) {
+      this.players[socket.id].fireCannon();
+    }
+  }
+
   update() {
     // Calculate time elapsed
     const now = Date.now();
@@ -49,27 +55,21 @@ class Game {
     // Update each player
     Object.keys(this.sockets).forEach(playerID => {
       const player = this.players[playerID];
-      player.update(dt);
+      const newCannonballs= player.update(dt);
+      if (newCannonballs) {
+        newCannonballs.forEach(newCannonball => {this.cannonballs.push(newCannonball)});
+      }
     });
 
-    // // Apply collisions, give players score for hitting bullets
-    // const destroyedBullets = applyCollisions(Object.values(this.players), this.bullets);
-    // destroyedBullets.forEach(b => {
-    //   if (this.players[b.parentID]) {
-    //     this.players[b.parentID].onDealtDamage();
-    //   }
-    // });
-    // this.bullets = this.bullets.filter(bullet => !destroyedBullets.includes(bullet));
-
-    // // Check if any players are dead
-    // Object.keys(this.sockets).forEach(playerID => {
-    //   const socket = this.sockets[playerID];
-    //   const player = this.players[playerID];
-    //   if (player.hp <= 0) {
-    //     socket.emit(Constants.MSG_TYPES.GAME_OVER);
-    //     this.removePlayer(socket);
-    //   }
-    // });
+    const cannonballsToRemove = [];
+    this.cannonballs.forEach(cannonball => {
+      if (cannonball.y < -1) {
+        cannonballsToRemove.push(cannonball);
+      } else {
+        cannonball.update(dt);
+      }
+    });
+    this.cannonballs = this.cannonballs.filter(cannonball => !cannonballsToRemove.includes(cannonball));
 
     // Send a game update to each player every other time
     if (this.shouldSendUpdate) {
@@ -104,6 +104,7 @@ class Game {
       t: Date.now(),
       me: player.serializeForUpdate(),
       others: Object.values(this.players).map(p => p.serializeForUpdate()),
+      cannonballs: this.cannonballs.map(b => b.serializeForUpdate()),
       leaderboard,
     };
   }
