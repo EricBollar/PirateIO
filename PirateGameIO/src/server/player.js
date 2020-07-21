@@ -8,7 +8,8 @@ class Player extends ObjectClass {
     this.x = x;
     this.z = z;
     this.username = username;
-    this.angle = 0;
+    this.angleY = 0;
+    this.angleZ = 0;
     this.shouldTurnRight = false;
     this.shouldTurnLeft = false;
     this.currTurnRate = 0;
@@ -16,16 +17,18 @@ class Player extends ObjectClass {
     this.turnAccel = 0.02 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
-    this.camHeight = 10;
+    this.camHeight = 30;
     this.camAngle = 0;
     this.camAngleStep = 0.01;
-    this.camRadius = 15;
+    this.camRadius = 30;
     this.prevCamX = 0;
     this.speed = 0.1;
+    this.created = 1;
   }
 
   update(dt) {
     super.update(dt);
+    this.created--;
 
     this.calcShipAngle();
     this.moveForward();
@@ -51,8 +54,8 @@ class Player extends ObjectClass {
   }
 
   moveForward() {
-    this.x += Math.sin(this.angle) * this.speed;
-    this.z += Math.cos(this.angle) * this.speed;
+    this.x += Math.sin(this.angleY) * this.speed;
+    this.z += Math.cos(this.angleY) * this.speed;
   }
 
   calcShipAngle() {
@@ -60,28 +63,25 @@ class Player extends ObjectClass {
       if (this.currTurnRate < this.maxTurnRate) {
         this.currTurnRate += this.turnAccel;
       }
-      this.angle += this.currTurnRate;
+      this.angleY += this.currTurnRate;
     } else if (this.shouldTurnRight && !this.shouldTurnLeft) {
       if (this.currTurnRate > -this.maxTurnRate) {
         this.currTurnRate -= this.turnAccel;
       }
-      this.angle += this.currTurnRate;
+      this.angleY += this.currTurnRate;
     } else {
-      if (Math.abs(this.currTurnRate) > 0.1 * Math.PI / 180) {
-        if (this.currTurnRate > 0) {
-          this.currTurnRate -= this.turnAccel * 0.5;
-          this.angle += this.currTurnRate;
-        } else {
-          this.currTurnRate += this.turnAccel * 0.5;
-          this.angle += this.currTurnRate;
-        }
+      if (this.currTurnRate > 0) {
+        this.currTurnRate -= this.turnAccel * 0.5;
+        this.angleY += this.currTurnRate;
       } else {
-        this.currTurnRate = 0;
+        this.currTurnRate += this.turnAccel * 0.5;
+        this.angleY += this.currTurnRate;
       }
     }
-    if (this.angle > 2 * Math.PI) {
-      this.angle -= 2 * Math.PI;
+    if (this.angleY > 2 * Math.PI) {
+      this.angleY -= 2 * Math.PI;
     }
+    this.angleZ = this.currTurnRate * 10;
   }
     
   serializeForUpdate() {
@@ -89,10 +89,11 @@ class Player extends ObjectClass {
       ...(super.serializeForUpdate()),
       x: this.x,
       z: this.z,
-      angle: this.angle,
+      angleY: this.angleY,
       camX: this.camX,
       camZ: this.camZ,
       camHeight: this.camHeight,
+      angleZ: this.angleZ,
       shouldTurnRight: this.shouldTurnRight,
       shouldTurnLeft: this.shouldTurnLeft,
       currTurnRate: this.currTurnRate,
@@ -103,6 +104,7 @@ class Player extends ObjectClass {
       camRadius: this.camRadius,
       prevCamX: this.prevCamX,
       speed: this.speed,
+      created: this.created,
     };
   }
 }

@@ -4,7 +4,8 @@ import { getCurrentState } from './state';
 import * as THREE from './three/build/three.js';
 import { OBJLoader } from './three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from './three/examples/jsm/loaders/MTLLoader';
-import { create } from 'lodash';
+import { create, isUndefined } from 'lodash';
+import { updateCamera } from './networking';
 
 const Constants = require('../shared/constants');
 
@@ -15,8 +16,7 @@ const canvas = document.getElementById('game-canvas');
 setCanvasDimensions();
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer({canvas});
-renderer.setSize(window.innerWidth, window.innerHeight - 32);
-document.body.appendChild(renderer.domElement);
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);;
 createScene();
 
 function setCanvasDimensions() {
@@ -29,23 +29,51 @@ function setCanvasDimensions() {
 
 window.addEventListener('resize', debounce(40, setCanvasDimensions));
 
+var newShip;
+var shipModel;
+
 function render() {
-  const { me, others, bullets } = getCurrentState();
+  const { me, others } = getCurrentState();
   if (!me) {
     return;
   }
 
-  // Draw all bullets
-  //bullets.forEach(renderBullet.bind(null, me));
+  if (newShip) {
+    loadShip();
+    newShip = false;
+  }
 
-  renderPlayer(me, me);
-  others.forEach(renderPlayer.bind(null, me));
+  updatePlayer(me, me);
+  others.forEach(updatePlayer.bind(null, me));
+  updateCam(me);
+  renderer.render(scene, camera);
+  while (scene.children.length > 2) {
+    scene.remove(scene.children[scene.children.length - 1]);
+  }
+}
+
+function updateCam(me) {
+  const {x, z, camX, camHeight, camZ} = me;
+  camera.position.set(camX, camHeight, camZ);
+  camera.lookAt(x, 0, z);
+}
+
+function loadShip() {
+  var mtlloader = new MTLLoader();
+  var objloader = new OBJLoader();
+  mtlloader.load("/assets/ship.mtl", function (materials) {
+    materials.preload();
+    objloader.setMaterials(materials);
+    objloader.load("/assets/ship.obj", function (object) {
+      object.scale.set(0.1, 0.1, 0.1);
+      shipModel = object;
+    });
+  })
 }
 
 function createScene() {
-  var keylight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
-  keylight.position.set(-100, 0, 100);
-  scene.add(keylight);
+  renderer.setSize(window.innerWidth, window.innerHeight - 32);
+  document.body.appendChild(renderer.domElement);
   canvas.style.cursor = 'none';
   var geometry = new THREE.PlaneGeometry( 100, 100, 32 );
   var material = new THREE.MeshLambertMaterial( {color: 0x1873e7, side: THREE.DoubleSide} );
@@ -57,32 +85,14 @@ function createScene() {
   scene.add( light );
 }
 
-// Renders a ship at the given coordinates
-function renderPlayer(me, player) {
-  const { id, x, z, angle, camX, camZ, camHeight } = player;
-  console.log(id);
-  var ship;
-  if (scene.getObjectByName("" + id) === undefined) {
-    var mtlloader = new MTLLoader();
-    mtlloader.load("/assets/ship.mtl", function (materials) {
-      materials.preload();
-      var objloader = new OBJLoader();
-      objloader.setMaterials(materials);
-      objloader.load("/assets/ship.obj", function (object) {
-        object.scale.set(0.1, 0.1, 0.1);
-        object.name = "" + id;
-        scene.add(object);
-        ship = object;
-      });
-    })
-  }
-  ship = scene.getObjectByName("" + id);
-  ship.position.set(x, 1, z);
-  ship.rotation.y = angle;
-  var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-  camera.position.set(camX, camHeight, camZ);
-  camera.lookAt(ship.position);
-  renderer.render(scene, camera);
+function updatePlayer(me, player) {
+  const {id, x, z, angleY, angleZ, created} = player;
+  var cube = new THREE.Mesh();
+  cube = shipModel.clone();
+  scene.add(cube);
+  cube.position.set(x, 0, z);
+  cube.rotation.y = angleY;
+  cube.rotation.z = angleZ;
 }
 
 function renderMainMenu() {
@@ -96,6 +106,7 @@ let renderInterval = setInterval(renderMainMenu, 1000 / 60);
 // Replaces main menu rendering with game rendering.
 export function startRendering() {
   clearInterval(renderInterval);
+  newShip = true;
   renderInterval = setInterval(render, 1000 / 60);
 }
 
