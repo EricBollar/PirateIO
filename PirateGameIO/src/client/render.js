@@ -99,13 +99,21 @@ function createScene() {
 }
 
 function updatePlayer(me, player) {
-  const {id, x, z, angleY, angleZ, created} = player;
+  const {id, x, z, angleY, angleZ, health} = player;
+  console.log(health);
+  const {camX, camHeight, camZ} = me;
   var cube = new THREE.Mesh();
   cube = shipModel.clone();
   scene.add(cube);
   cube.position.set(x, 0, z);
   cube.rotation.y = angleY;
   cube.rotation.z = angleZ;
+  var geometry = new THREE.PlaneGeometry( health/100.0 * 1.5, 0.25, 1 );
+  var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
+  var plane = new THREE.Mesh( geometry, material );
+  scene.add( plane );
+  plane.position.set(x, 2.5, z);
+  plane.lookAt(camX, camHeight, camZ);
 }
 
 function renderMainMenu() {

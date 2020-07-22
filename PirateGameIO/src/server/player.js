@@ -28,6 +28,7 @@ class Player extends ObjectClass {
     this.reloadTime = 1;
     this.fireCooldown = 0;
     this.fire = false;
+    this.health = 100;
   }
 
   update(dt) {
@@ -49,10 +50,10 @@ class Player extends ObjectClass {
       cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, -Math.PI/2));
       cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, Math.PI/2));
       cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, -Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, Math.PI/3));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, -Math.PI/3));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, 4*Math.PI/3));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, -4*Math.PI/3));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, 5*Math.PI/12));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 1, this.z + Math.cos(this.angleY) * 1, this.cannonSpeed, this.angleY, -5*Math.PI/12));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, 7*Math.PI/12));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -1, this.z + Math.cos(this.angleY) * -1, this.cannonSpeed, this.angleY, -7*Math.PI/12));
       return cannonballs
     }
     return null;
@@ -71,6 +72,10 @@ class Player extends ObjectClass {
 
   turnLeft(bool) {
     this.shouldTurnLeft = bool;
+  }
+
+  lowerHealth(amt) {
+    this.health -= amt;
   }
 
   updateCamera(x) {
@@ -133,6 +138,7 @@ class Player extends ObjectClass {
       prevCamX: this.prevCamX,
       speed: this.speed,
       created: this.created,
+      health: this.health,
     };
   }
 }

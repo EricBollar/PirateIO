@@ -53,15 +53,26 @@ class Game {
     this.lastUpdateTime = now;
 
     // Update each player
+    const cannonballsToRemove = [];
     Object.keys(this.sockets).forEach(playerID => {
+      const socket = this.sockets[playerID];
       const player = this.players[playerID];
       const newCannonballs= player.update(dt);
       if (newCannonballs) {
         newCannonballs.forEach(newCannonball => {this.cannonballs.push(newCannonball)});
       }
+      this.cannonballs.forEach(cannonball => {
+        if (cannonball.distanceTo(player.x, player.z) <= 1 && cannonball.parentID !== player.id) {
+          player.lowerHealth(10);
+          cannonballsToRemove.push(cannonball);
+        }
+      })
+      if (player.health <= 0) {
+        socket.emit(Constants.MSG_TYPES.GAME_OVER);
+        this.removePlayer(socket);
+      }
     });
 
-    const cannonballsToRemove = [];
     this.cannonballs.forEach(cannonball => {
       if (cannonball.y < -1) {
         cannonballsToRemove.push(cannonball);

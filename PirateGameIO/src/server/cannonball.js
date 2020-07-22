@@ -32,6 +32,10 @@ class Cannonball extends ObjectClass {
     this.parabolaX += this.speed;
   }
 
+  distanceTo(x, z) {
+    return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.z - z, 2));
+  }
+
   serializeForUpdate() {
     return {
       ...(super.serializeForUpdate()),
