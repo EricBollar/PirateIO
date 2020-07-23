@@ -30,14 +30,27 @@ function mouseMove() {
   //updateCamera(event.x);
 }
 
+var prevScroll = 0;
+function onScroll() {
+  if (document.body.scrollTop > prevScroll) {
+    //camZoomIn();
+    console.log("here!");
+    prevScroll = document.body.scrollTop;
+  } else if (document.body.scrollTop < prevScroll) {
+
+  }
+}
+
 export function startCapturingInput() {
   window.addEventListener('mousemove', mouseMove);
+  window.addEventListener('onscroll', onScroll);
   window.addEventListener('keydown', keyPress);
   window.addEventListener('keyup', keyUp);
 }
 
 export function stopCapturingInput() {
   window.removeEventListener('mousemove', mouseMove);
+  window.removeEventListener('onscroll', onScroll);
   window.removeEventListener('keydown', keyPress);
   window.removeEventListener('keyup', keyUp);
 }

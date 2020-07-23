@@ -19,10 +19,10 @@ class Player extends ObjectClass {
     this.turnAccel = 0.02 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
-    this.camHeight = 120;
+    this.camHeight = 120; //50
     this.camAngle = 0;
     this.camAngleStep = 2 * Math.PI/180;
-    this.camRadius = 180;
+    this.camRadius = 180; // 80
     this.speed = 0.5;
     this.cannonSpeed = 1;
     this.created = 1;
@@ -42,7 +42,7 @@ class Player extends ObjectClass {
 
     this.calcShipAngle();
     this.moveForward();
-    this.calcBob(this.time);
+    //this.calcBob(this.time);
 
     this.fireCooldown -= dt;
 

@@ -33,8 +33,12 @@ window.addEventListener('resize', debounce(40, setCanvasDimensions));
 
 var newShip;
 var shipModel;
-var shipModelTexture;
-var shipSails;
+var shipMastOne;
+var shipMastTwo;
+var shipMastThree;
+var shipSailsOne;
+var shipSailsTwo;
+var shipSailsThree;
 var ocean;
 
 var oceanCount = 5;
@@ -90,9 +94,29 @@ function loadShip() {
     //object.scale.set(0.3, 0.3, 0.3);
     shipModel = object;
   });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_SailUp_03_Pirate.obj", function (object) {
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_01_Pirate.obj", function (object) {
     //object.scale.set(0.3, 0.3, 0.3);
-    shipSails = object;
+    shipMastOne = object;
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_02_Pirate.obj", function (object) {
+    //object.scale.set(0.3, 0.3, 0.3);
+    shipMastTwo = object;
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_03_Pirate.obj", function (object) {
+    //object.scale.set(0.3, 0.3, 0.3);
+    shipMastThree = object;
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_01_Pirate.obj", function (object) {
+    //object.scale.set(0.3, 0.3, 0.3);
+    shipSailsOne = object;
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_02_Pirate.obj", function (object) {
+    //object.scale.set(0.3, 0.3, 0.3);
+    shipSailsTwo = object;
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_03_Pirate.obj", function (object) {
+    //object.scale.set(0.3, 0.3, 0.3);
+    shipSailsThree = object;
   });
   //shipModelTexture = THREE.TextureLoader.load('/assets/SourceFiles/Textures/Texture_01_A.png');
 }
@@ -111,6 +135,9 @@ function createScene() {
   scene.add( light );
   createOcean();
   scene.background = new THREE.Color( 0x1ecbe1 );
+  light = new THREE.DirectionalLight(0xffffff, 1.0);
+  light.position.set(0, 100, 0);
+  scene.add(light);
 }
 
 var prevY = 0;
@@ -135,17 +162,61 @@ function updatePlayer(me, player) {
   cube.rotation.y = angleY;
   cube.rotation.z = angleZ;
   cube.rotation.x = angleX;
-  var sails = new THREE.Mesh();
-  sails = shipSails.clone();
-  scene.add(sails);
-  sails.position.set(x, cube.position.y+5, z);
-  sails.rotation.y = angleY;
-  sails.rotation.z = angleZ;
+
+  var mastOne = new THREE.Mesh();
+  mastOne = shipMastOne.clone();
+  scene.add(mastOne);
+  mastOne.position.set(x, cube.position.y+8, z);
+  mastOne.rotation.y = angleY;
+  mastOne.rotation.z = angleZ;
+  mastOne.translateZ(8);
+  var mastTwo = new THREE.Mesh();
+  mastTwo = shipMastTwo.clone();
+  scene.add(mastTwo);
+  mastTwo.position.set(x, cube.position.y+6, z);
+  mastTwo.rotation.y = angleY;
+  mastTwo.rotation.z = angleZ;
+  var mastThree = new THREE.Mesh();
+  mastThree = shipMastThree.clone();
+  scene.add(mastThree);
+  mastThree.position.set(x, cube.position.y+11, z);
+  mastThree.rotation.y = angleY;
+  mastThree.rotation.z = angleZ;
+  mastThree.translateZ(-12);
+
+  var sailsOne = new THREE.Mesh();
+  sailsOne = shipSailsOne.clone();
+  scene.add(sailsOne);
+  sailsOne.position.set(x, cube.position.y+8, z);
+  sailsOne.rotation.y = angleY;
+  sailsOne.rotation.z = angleZ;
+  sailsOne.translateZ(8);
+  var sailsTwo = new THREE.Mesh();
+  sailsTwo = shipSailsTwo.clone();
+  scene.add(sailsTwo);
+  sailsTwo.position.set(x, cube.position.y+6, z);
+  sailsTwo.rotation.y = angleY;
+  sailsTwo.rotation.z = angleZ;
+  var sailsThree = new THREE.Mesh();
+  sailsThree = shipSailsThree.clone();
+  scene.add(sailsThree);
+  sailsThree.position.set(x, cube.position.y+11, z);
+  sailsThree.rotation.y = angleY;
+  sailsThree.rotation.z = angleZ;
+  sailsThree.translateZ(-12);
+
+  var geometry = new THREE.PlaneGeometry( 17, 3, 1 );
+  var material = new THREE.MeshBasicMaterial( {color: 0x52130B, side: THREE.DoubleSide} );
+  var plane = new THREE.Mesh( geometry, material );
+  scene.add( plane );
+  plane.position.set(x, cube.position.y+35, z);
+  plane.lookAt(camX, camHeight, camZ);
+  plane.translateZ(-0.1);
   var geometry = new THREE.PlaneGeometry( health/100.0 * 15, 2, 1 );
   var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
   var plane = new THREE.Mesh( geometry, material );
   scene.add( plane );
-  plane.position.set(x, cube.position.y+20, z);
+  plane.position.set(x, cube.position.y+35, z);
   plane.lookAt(camX, camHeight, camZ);
 }
 
@@ -166,7 +237,7 @@ function createOcean() {
       USE_HALF_FLOAT: false,
       INITIAL_SIZE: 2000.0,
       INITIAL_WIND: [ 10.0, 10.0 ],
-      INITIAL_CHOPPINESS: 0.2,
+      INITIAL_CHOPPINESS: 0.5,
       CLEAR_COLOR: [ 1.0, 1.0, 1.0, 0.0 ],
       GEOMETRY_ORIGIN: [ origx, origz ],
       SUN_DIRECTION: [ - 1.0, 1.0, 1.0 ],
@@ -186,8 +257,6 @@ function createOcean() {
 
 var lastTime = (new Date()).getTime();
 function updateOcean(me) {
-  ocean.x = me.x;
-  ocean.z = me.z;
   var currentTime = new Date().getTime();
   ocean.deltaTime = ( currentTime - lastTime ) / 1000 || 0.0;
   lastTime = currentTime;
