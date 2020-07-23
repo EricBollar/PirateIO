@@ -54,9 +54,9 @@ class Player extends ObjectClass {
     }
 
     if (this.isCamTurnRight && !this.isCamTurnLeft) {
-      this.updateCamera(-this.camAngleStep);
-    } else if (this.isCamTurnLeft && !this.isCamTurnRight) {
       this.updateCamera(this.camAngleStep);
+    } else if (this.isCamTurnLeft && !this.isCamTurnRight) {
+      this.updateCamera(-this.camAngleStep);
     } else {
       this.updateCamera(0);
     }

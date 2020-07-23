@@ -37,7 +37,7 @@ var shipModelTexture;
 var shipSails;
 var ocean;
 
-var oceanCount = 1;
+var oceanCount = 3;
 function render() {
   const { me, others, cannonballs } = getCurrentState();
   if (!me) {
@@ -53,7 +53,7 @@ function render() {
 
   if (oceanCount <= 0) {
     updateOcean(me);
-    oceanCount = 1;
+    oceanCount = 3;
   } else {
     oceanCount--;
   }

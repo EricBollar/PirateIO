@@ -68,7 +68,7 @@ class Game {
         newCannonballs.forEach(newCannonball => {this.cannonballs.push(newCannonball)});
       }
       this.cannonballs.forEach(cannonball => {
-        if (cannonball.distanceTo(player.x, player.z) <= 1 && cannonball.parentID !== player.id) {
+        if (cannonball.distanceTo(player.x, player.z) <= 10 && cannonball.parentID !== player.id) {
           player.lowerHealth(10);
           cannonballsToRemove.push(cannonball);
         }
