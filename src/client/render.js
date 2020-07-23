@@ -53,7 +53,7 @@ function render() {
 
   if (oceanCount <= 0) {
     updateOcean(me);
-    oceanCount = 5;
+    oceanCount = 10;
   } else {
     oceanCount--;
   }
@@ -110,11 +110,12 @@ function createScene() {
   var light = new THREE.HemisphereLight( 0x1ecbe1, 0x080820, 1 );
   scene.add( light );
   createOcean();
+  scene.background = new THREE.Color( 0x1ecbe1 );
 }
 
 var prevY = 0;
 function updatePlayer(me, player) {
-  const {id, x, z, angleY, angleZ, health} = player;
+  const {id, x, y, z, angleY, angleX, angleZ, health} = player;
   const {camX, camHeight, camZ} = me;
   var cube = new THREE.Mesh();
   cube = shipModel.clone();
@@ -130,9 +131,10 @@ function updatePlayer(me, player) {
   if (!isUndefined(point)) {
     cube.position.y = point;
   }*/
-  cube.position.set(x, -2, z);
+  cube.position.set(x, y, z);
   cube.rotation.y = angleY;
   cube.rotation.z = angleZ;
+  cube.rotation.x = angleX;
   var sails = new THREE.Mesh();
   sails = shipSails.clone();
   scene.add(sails);
@@ -154,7 +156,7 @@ function renderMainMenu() {
 }
 
 function createOcean() {
-  var gsize = 512;
+  var gsize = 800;
   var res = 1024;
   var gres = res / 2;
   var origx = 0;
@@ -162,7 +164,7 @@ function createOcean() {
   ocean = new Ocean( renderer, camera, scene,
     {
       USE_HALF_FLOAT: false,
-      INITIAL_SIZE: 1500.0,
+      INITIAL_SIZE: 2000.0,
       INITIAL_WIND: [ 10.0, 10.0 ],
       INITIAL_CHOPPINESS: 0.2,
       CLEAR_COLOR: [ 1.0, 1.0, 1.0, 0.0 ],
@@ -184,6 +186,8 @@ function createOcean() {
 
 var lastTime = (new Date()).getTime();
 function updateOcean(me) {
+  ocean.x = me.x;
+  ocean.z = me.z;
   var currentTime = new Date().getTime();
   ocean.deltaTime = ( currentTime - lastTime ) / 1000 || 0.0;
   lastTime = currentTime;

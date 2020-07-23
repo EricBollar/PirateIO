@@ -6,15 +6,17 @@ class Player extends ObjectClass {
   constructor(id, username, x, z) {
     super(id);
     this.x = x;
+    this.y = -3;
     this.z = z;
     this.username = username;
     this.angleY = 0;
+    this.angleX = 0;
     this.angleZ = 0;
     this.shouldTurnRight = false;
     this.shouldTurnLeft = false;
     this.currTurnRate = 0;
     this.maxTurnRate = 1 * Math.PI / 180;
-    this.turnAccel = 0.01 * Math.PI / 180;
+    this.turnAccel = 0.02 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
     this.camHeight = 120;
@@ -30,14 +32,17 @@ class Player extends ObjectClass {
     this.health = 100;
     this.isCamTurnRight = false;
     this.isCamTurnLeft = false;
+    this.time = 0;
   }
 
   update(dt) {
+    this.time += dt;
     super.update(dt);
     this.created--;
 
     this.calcShipAngle();
     this.moveForward();
+    this.calcBob(this.time);
 
     this.fireCooldown -= dt;
 
@@ -61,6 +66,11 @@ class Player extends ObjectClass {
       this.updateCamera(0);
     }
     return null;
+  }
+
+  calcBob(t) {
+    this.y = Math.sin(t) - 3;
+    this.angleX = -Math.sin(t+2) * 2 * Math.PI/180;
   }
 
   fireCannon() {
@@ -114,10 +124,10 @@ class Player extends ObjectClass {
       this.angleY += this.currTurnRate;
     } else {
       if (this.currTurnRate > 0) {
-        this.currTurnRate -= this.turnAccel * 0.5;
+        this.currTurnRate -= this.turnAccel;
         this.angleY += this.currTurnRate;
       } else {
-        this.currTurnRate += this.turnAccel * 0.5;
+        this.currTurnRate += this.turnAccel;
         this.angleY += this.currTurnRate;
       }
     }
@@ -149,6 +159,8 @@ class Player extends ObjectClass {
       speed: this.speed,
       created: this.created,
       health: this.health,
+      y: this.y,
+      angleX: this.angleX,
     };
   }
 }
