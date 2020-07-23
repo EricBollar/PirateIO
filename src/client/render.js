@@ -37,6 +37,7 @@ var shipModelTexture;
 var shipSails;
 var ocean;
 
+var oceanCount = 1;
 function render() {
   const { me, others, cannonballs } = getCurrentState();
   if (!me) {
@@ -50,7 +51,13 @@ function render() {
     console.log(cannonballs);
   }
 
-  updateOcean(me);
+  if (oceanCount <= 0) {
+    updateOcean(me);
+    oceanCount = 1;
+  } else {
+    oceanCount--;
+  }
+
   updatePlayer(me, me);
   others.forEach(updatePlayer.bind(null, me));
   cannonballs.forEach(updateCannons.bind(null, me));
@@ -65,7 +72,7 @@ function updateCannons(me, cannon) {
   const {x, y, z, radius} = cannon;
   console.log(x + " " + y + " " + z);
   var geometry = new THREE.SphereGeometry( radius, 5, 5 );
-  var material = new THREE.MeshBasicMaterial( {color: 0x262F30} );
+  var material = new THREE.MeshBasicMaterial( {color: 0xb02f2a} );
   var sphere = new THREE.Mesh( geometry, material );
   scene.add( sphere );
   sphere.position.set(x, y, z);
@@ -80,11 +87,11 @@ function updateCam(me) {
 function loadShip() {
   var loader = new OBJLoader();
 	loader.load( '/assets/OBJ/SM_Veh_Boat_Warship_01_Hull_Pirate.obj', function ( object ) {
-    object.scale.set(0.1, 0.1, 0.1);
+    //object.scale.set(0.3, 0.3, 0.3);
     shipModel = object;
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_SailUp_03_Pirate.obj", function (object) {
-    object.scale.set(0.1, 0.1, 0.1);
+    //object.scale.set(0.3, 0.3, 0.3);
     shipSails = object;
   });
   //shipModelTexture = THREE.TextureLoader.load('/assets/SourceFiles/Textures/Texture_01_A.png');
@@ -105,42 +112,38 @@ function createScene() {
   createOcean();
 }
 
-function createWater() {
-  var waterGeometry = new THREE.PlaneBufferGeometry( 50, 50 );
-
-  var water = new Water( waterGeometry, {
-    color: '#ffffff',
-    scale: 1,
-    flowDirection: new THREE.Vector2( 1, 1 ),
-    textureWidth: 1024,
-    textureHeight: 1024
-  } );
-
-  water.position.set(0, 0, 0);
-  water.rotation.x = -Math.PI/2;
-  scene.add( water );
-}
-
+var prevY = 0;
 function updatePlayer(me, player) {
   const {id, x, z, angleY, angleZ, health} = player;
   const {camX, camHeight, camZ} = me;
   var cube = new THREE.Mesh();
   cube = shipModel.clone();
   scene.add(cube);
-  cube.position.set(x, 0, z);
+  /*
+  var point = undefined;
+  if (oceanCount <= 0) {
+    var raycaster = new THREE.Raycaster(new THREE.Vector3(x, 30, z), new THREE.Vector3(0, -1, 0));
+    var intersects = raycaster.intersectObjects(scene.children, true);
+    console.log(intersects);
+  }
+  cube.position.set(x, -1, z);
+  if (!isUndefined(point)) {
+    cube.position.y = point;
+  }*/
+  cube.position.set(x, -2, z);
   cube.rotation.y = angleY;
   cube.rotation.z = angleZ;
   var sails = new THREE.Mesh();
   sails = shipSails.clone();
   scene.add(sails);
-  sails.position.set(x, 0.5, z);
+  sails.position.set(x, cube.position.y+5, z);
   sails.rotation.y = angleY;
   sails.rotation.z = angleZ;
-  var geometry = new THREE.PlaneGeometry( health/100.0 * 1.5, 0.25, 1 );
+  var geometry = new THREE.PlaneGeometry( health/100.0 * 15, 2, 1 );
   var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
   var plane = new THREE.Mesh( geometry, material );
   scene.add( plane );
-  plane.position.set(x, 3, z);
+  plane.position.set(x, cube.position.y+20, z);
   plane.lookAt(camX, camHeight, camZ);
 }
 
@@ -151,32 +154,40 @@ function renderMainMenu() {
 }
 
 function createOcean() {
-  ocean = new Ocean(renderer, camera, scene, {
-    USE_HALF_FLOAT: false,
-    INITIAL_SIZE: 256.0,
-    INITIAL_WIND: [ 10.0, 10.0 ],
-    INITIAL_CHOPPINESS: 4,
-    CLEAR_COLOR: [ 1.0, 1.0, 1.0, 0.0 ],
-    GEOMETRY_ORIGIN: [ 0, 0 ],
-    SUN_DIRECTION: [ - 1.0, 1.0, 1.0 ],
-    OCEAN_COLOR: new THREE.Vector3( 0.004, 0.016, 0.047 ),
-    SKY_COLOR: new THREE.Vector3( 3.2, 9.6, 12.8 ),
-    EXPOSURE: 0.35,
-    GEOMETRY_RESOLUTION: 100,
-    GEOMETRY_SIZE: 100,
-    RESOLUTION: 300,
-  });
+  var gsize = 512;
+  var res = 1024;
+  var gres = res / 2;
+  var origx = 0;
+  var origz = 0;
+  ocean = new Ocean( renderer, camera, scene,
+    {
+      USE_HALF_FLOAT: false,
+      INITIAL_SIZE: 256.0,
+      INITIAL_WIND: [ 10.0, 10.0 ],
+      INITIAL_CHOPPINESS: 1.5,
+      CLEAR_COLOR: [ 1.0, 1.0, 1.0, 0.0 ],
+      GEOMETRY_ORIGIN: [ origx, origz ],
+      SUN_DIRECTION: [ - 1.0, 1.0, 1.0 ],
+      OCEAN_COLOR: new THREE.Vector3( 0.004, 0.016, 0.047 ),
+      SKY_COLOR: new THREE.Vector3( 3.2, 9.6, 12.8 ),
+      EXPOSURE: 0.35,
+      GEOMETRY_RESOLUTION: gres,
+      GEOMETRY_SIZE: gsize,
+      RESOLUTION: res
+    } );
+
   ocean.materialOcean.uniforms[ "u_projectionMatrix" ] = { value: camera.projectionMatrix };
-	ocean.materialOcean.uniforms[ "u_viewMatrix" ] = { value: camera.matrixWorldInverse };
-	ocean.materialOcean.uniforms[ "u_cameraPosition" ] = { value: camera.position };
-	scene.add( ocean.oceanMesh );
+  ocean.materialOcean.uniforms[ "u_viewMatrix" ] = { value: camera.matrixWorldInverse };
+  ocean.materialOcean.uniforms[ "u_cameraPosition" ] = { value: camera.position };
+  scene.add(ocean.oceanMesh);
 }
 
 var lastTime = (new Date()).getTime();
 function updateOcean(me) {
-  var currentTime = (new Date()).getTime();
+  var currentTime = new Date().getTime();
   ocean.deltaTime = ( currentTime - lastTime ) / 1000 || 0.0;
-  ocean.render();
+  lastTime = currentTime;
+  ocean.render( ocean.deltaTime );
   ocean.overrideMaterial = ocean.materialOcean;
 
   ocean.materialOcean.uniforms[ "u_normalMap" ].value = ocean.normalMapFramebuffer.texture;

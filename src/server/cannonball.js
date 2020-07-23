@@ -15,7 +15,7 @@ class Cannonball extends ObjectClass {
     this.parabolaX = 0;
     this.speed = speed;
     this.angle = angle;
-    this.radius = 0.1;
+    this.radius = 1;
   }
 
   update(dt) {
@@ -26,9 +26,9 @@ class Cannonball extends ObjectClass {
   calcPosition() {
     this.x += Math.sin(this.dir + this.angle) * this.speed * 2;
     this.z += Math.cos(this.dir + this.angle) * this.speed * 2;
-    this.x += Math.sin(this.dir) * this.speed;
-    this.z += Math.cos(this.dir) * this.speed;
-    this.y = -0.25 * Math.pow(this.parabolaX - 2.75, 2) + 2;
+    this.x += Math.sin(this.dir) * this.speed/2;
+    this.z += Math.cos(this.dir) * this.speed/2;
+    this.y = -(1.0/35) * Math.pow(this.parabolaX - 25, 2) + 20;
     this.parabolaX += this.speed;
   }
 

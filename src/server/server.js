@@ -35,7 +35,8 @@ io.on('connection', socket => {
   socket.on(Constants.MSG_TYPES.JOIN_GAME, joinGame);
   socket.on(Constants.MSG_TYPES.SHIPTURNRIGHT, handleShipTurnRight);
   socket.on(Constants.MSG_TYPES.SHIPTURNLEFT, handleShipTurnLeft);
-  socket.on(Constants.MSG_TYPES.CAMERAUPDATE, handleCameraUpdate);
+  socket.on(Constants.MSG_TYPES.CAMTURNRIGHT, handleCamTurnRight);
+  socket.on(Constants.MSG_TYPES.CAMTURNLEFT, handleCamTurnLeft);
   socket.on(Constants.MSG_TYPES.SHIPFIRECANNON, handleShipFireCannon);
   socket.on('disconnect', onDisconnect);
 });
@@ -61,6 +62,14 @@ function handleCameraUpdate(pos) {
 
 function handleShipFireCannon() {
   game.shipFireCannon(this);
+}
+
+function handleCamTurnRight(bool) {
+  game.camTurnRight(this, bool);
+}
+
+function handleCamTurnLeft(bool) {
+  game.camTurnLeft(this, bool);
 }
 
 function onDisconnect() {

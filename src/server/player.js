@@ -14,21 +14,22 @@ class Player extends ObjectClass {
     this.shouldTurnLeft = false;
     this.currTurnRate = 0;
     this.maxTurnRate = 1 * Math.PI / 180;
-    this.turnAccel = 0.02 * Math.PI / 180;
+    this.turnAccel = 0.01 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
-    this.camHeight = 10;
+    this.camHeight = 120;
     this.camAngle = 0;
-    this.camAngleStep = 0.01;
-    this.camRadius = 18;
-    this.prevCamX = 0;
-    this.speed = 0.1;
-    this.cannonSpeed = 0.1;
+    this.camAngleStep = 2 * Math.PI/180;
+    this.camRadius = 180;
+    this.speed = 0.5;
+    this.cannonSpeed = 1;
     this.created = 1;
     this.reloadTime = 1;
     this.fireCooldown = 0;
     this.fire = false;
     this.health = 100;
+    this.isCamTurnRight = false;
+    this.isCamTurnLeft = false;
   }
 
   update(dt) {
@@ -37,7 +38,6 @@ class Player extends ObjectClass {
 
     this.calcShipAngle();
     this.moveForward();
-    this.updateCamera(this.prevCamX);
 
     this.fireCooldown -= dt;
 
@@ -46,11 +46,19 @@ class Player extends ObjectClass {
       var cannonballs = [];
       cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, Math.PI/2));
       cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, -Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -0.5, this.z + Math.cos(this.angleY) * -0.5, this.cannonSpeed, this.angleY, Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -0.5, this.z + Math.cos(this.angleY) * -0.5, this.cannonSpeed, this.angleY, -Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 0.5, this.z + Math.cos(this.angleY) * 0.5, this.cannonSpeed, this.angleY, Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 0.5, this.z + Math.cos(this.angleY) * 0.5, this.cannonSpeed, this.angleY, -Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.angleY, Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.angleY, -Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.angleY, Math.PI/2));
+      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.angleY, -Math.PI/2));
       return cannonballs;
+    }
+
+    if (this.isCamTurnRight && !this.isCamTurnLeft) {
+      this.updateCamera(-this.camAngleStep);
+    } else if (this.isCamTurnLeft && !this.isCamTurnRight) {
+      this.updateCamera(this.camAngleStep);
+    } else {
+      this.updateCamera(0);
     }
     return null;
   }
@@ -60,6 +68,14 @@ class Player extends ObjectClass {
       this.fireCooldown = this.reloadTime;
       this.fire = true;
     }
+  }
+
+  camTurnRight(bool) {
+    this.isCamTurnRight = bool;
+  }
+
+  camTurnLeft(bool) {
+    this.isCamTurnLeft = bool;
   }
 
   turnRight(bool) {
@@ -75,11 +91,9 @@ class Player extends ObjectClass {
   }
 
   updateCamera(x) {
-    var amount = x - this.prevCamX;
-    this.camAngle += this.camAngleStep * amount;
+    this.camAngle += x;
     this.camX = Math.sin(this.camAngle) * this.camRadius + this.x;
     this.camZ = Math.cos(this.camAngle) * -this.camRadius + this.z;
-    this.prevCamX = x;
   }
 
   moveForward() {

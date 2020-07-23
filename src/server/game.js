@@ -34,9 +34,15 @@ class Game {
     }
   }
 
-  updateCamera(socket, pos) {
+  camTurnRight(socket, bool) {
     if (this.players[socket.id]) {
-      this.players[socket.id].updateCamera(pos);
+      this.players[socket.id].camTurnRight(bool);
+    }
+  }
+
+  camTurnLeft(socket, bool) {
+    if (this.players[socket.id]) {
+      this.players[socket.id].camTurnLeft(bool);
     }
   }
 

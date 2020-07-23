@@ -40,10 +40,14 @@ export const shipTurnRight = throttle(20, bool => {
   socket.emit(Constants.MSG_TYPES.SHIPTURNRIGHT, bool);
 });
 
-export const updateCamera = throttle(20, pos => {
-  socket.emit(Constants.MSG_TYPES.CAMERAUPDATE, pos);
-});
-
 export const shipFireCannon = throttle(20, pos => {
   socket.emit(Constants.MSG_TYPES.SHIPFIRECANNON);
+});
+
+export const camTurnRight = throttle(20, bool => {
+  socket.emit(Constants.MSG_TYPES.CAMTURNRIGHT, bool);
+});
+
+export const camTurnLeft = throttle(20, bool => {
+  socket.emit(Constants.MSG_TYPES.CAMTURNLEFT, bool);
 });

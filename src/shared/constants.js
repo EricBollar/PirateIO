@@ -18,7 +18,8 @@ module.exports = Object.freeze({
     SHIPTURNRIGHT: 'shipturnright',
     SHIPTURNLEFT: 'shipturnleft',
     SHIPFIRECANNON: 'shipfirecannon',
-    CAMERAUPDATE: 'cameraupdate',
+    CAMTURNRIGHT: 'cameraturnright',
+    CAMTURNLEFT: 'cameraturnleft',
     GAME_OVER: 'dead',
   },
 });

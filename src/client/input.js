@@ -1,4 +1,4 @@
-import { shipTurnLeft, shipTurnRight, updateCamera, shipFireCannon } from './networking';
+import { shipTurnLeft, shipTurnRight, camTurnRight, camTurnLeft, shipFireCannon } from './networking';
 
 function keyPress() {
   if (event.keyCode === 65) {
@@ -7,6 +7,10 @@ function keyPress() {
     shipTurnRight(true);
   } else if (event.keyCode === 32) {
     shipFireCannon();
+  } else if (event.keyCode === 76) {
+    camTurnRight(true);
+  } else if (event.keyCode === 74) {
+    camTurnLeft(true);
   }
 }
 
@@ -15,11 +19,15 @@ function keyUp() {
     shipTurnLeft(false);
   } else if (event.keyCode === 68) {     
     shipTurnRight(false);
+  } else if (event.keyCode === 76) {     
+    camTurnRight(false);
+  } else if (event.keyCode === 74) {     
+    camTurnLeft(false);
   }
 }
 
 function mouseMove() {
-  updateCamera(event.x);
+  //updateCamera(event.x);
 }
 
 export function startCapturingInput() {
