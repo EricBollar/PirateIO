@@ -33,6 +33,16 @@ class Player extends ObjectClass {
     this.isCamTurnRight = false;
     this.isCamTurnLeft = false;
     this.time = 0;
+    this.color = this.getRandomColor();
+  }
+
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
 
   update(dt) {
@@ -161,6 +171,7 @@ class Player extends ObjectClass {
       health: this.health,
       y: this.y,
       angleX: this.angleX,
+      color: this.color,
     };
   }
 }

@@ -33,7 +33,6 @@ window.addEventListener('resize', debounce(40, setCanvasDimensions));
 
 var ocean;
 var objectsInSceneStart;
-var shipColor = getRandomColor();
 var sailColor = 0xEFEFE9;
 
 var oceanCount = 10;
@@ -81,10 +80,15 @@ function createHealthBar(x, y, z, health, camX, camHeight, camZ) {
   hp.lookAt(camX, camHeight, camZ);
 }
 
+// this function is going through every player in each update
+// me is always the playe viewing stuff
+// player is the current player that we are iterating through
 function updatePlayer(me, player) {
-  const {x, y, z, angleY, angleX, angleZ, health} = player;
+  // if this 1 has color, all clients are most current player's color
+  const {x, y, z, angleY, angleX, angleZ, health, color} = player;
+  // if this one is color, all players in client match the client color.
   const {camX, camHeight, camZ} = me;
-  createWarship(x, y, z, angleX, angleY, angleZ);
+  createWarship(x, y, z, angleX, angleY, angleZ, color);
   createHealthBar(x, y, z, health, camX, camHeight, camZ);
 }
 
@@ -127,17 +131,14 @@ function loadLargeShip() {
   var loader = new OBJLoader();
 	loader.load( '/assets/OBJ/SM_Veh_Veh_Boat_Large_01_Hull_Pirate.obj', function ( object ) {
     object.name = "hull";
-    object.children[0].material.color.set(shipColor);
     largeShip.push(object);
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Mast_01_Pirate.obj', function ( object ) {
     object.name = "mast1";
-    object.children[0].material.color.set(shipColor);
     largeShip.push(object);
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Mast_02_Pirate.obj', function ( object ) {
     object.name = "mast2";
-    object.children[0].material.color.set(shipColor);
     largeShip.push(object);
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_01_Pirate.obj', function ( object ) {
@@ -157,8 +158,9 @@ function loadLargeShip() {
   });
 }
 
-function createLargeShip(x, y, z, angleX, angleY, angleZ) {
+function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
   largeShip.forEach(index => {
+    var color = colorStr.substring(0, 7);
     var curr = index.clone();
     curr.rotation.x = angleX;
     curr.rotation.y = angleY;
@@ -191,63 +193,70 @@ function loadWarship() {
   var loader = new OBJLoader();
 	loader.load( '/assets/OBJ/SM_Veh_Boat_Warship_01_Hull_Pirate.obj', function ( object ) {
     object.name = "hull";
-    object.children[0].material.color.set(shipColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_01_Pirate.obj", function (object) {
     object.name = "mast1";
-    object.children[0].material.color.set(shipColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_02_Pirate.obj", function (object) {
     object.name = "mast2";
-    object.children[0].material.color.set(shipColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_03_Pirate.obj", function (object) {
     object.name = "mast3";
-    object.children[0].material.color.set(shipColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_01_Pirate.obj", function (object) {
     object.name = "sails1";
-    object.children[0].material.color.set(sailColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_02_Pirate.obj", function (object) {
     object.name = "sails2";
-    object.children[0].material.color.set(sailColor);
     warship.push(object);
   });
   loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_03_Pirate.obj", function (object) {
     object.name = "sails3";
-    object.children[0].material.color.set(sailColor);
     warship.push(object);
   });
 }
 
-function createWarship(x, y, z, angleX, angleY, angleZ) {
+function createWarship(x, y, z, angleX, angleY, angleZ, colorStr) {
   warship.forEach(index => {
+    var color = colorStr.substring(0, 7);
     var curr = index.clone();
     curr.rotation.x = angleX;
     curr.rotation.y = angleY;
     curr.rotation.z = angleZ;
     if (curr.name === "hull") { 
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
       curr.position.set(x, y, z)
     } else if (curr.name === "mast1") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
       curr.position.set(x, y+8, z);
       curr.translateZ(10);
     } else if (curr.name === "mast2") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
       curr.position.set(x, y+6, z);
     } else if (curr.name === "mast3") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
       curr.position.set(x, y+11, z);
       curr.translateZ(-12);
     } else if (curr.name === "sails1") {
+      curr.children[0].material.color.set(sailColor);
       curr.position.set(x, y+8, z);
       curr.translateZ(10);
     } else if (curr.name === "sails2") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
       curr.position.set(x, y+6, z);
     } else if (curr.name === "sails3") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
       curr.position.set(x, y+11, z);
       curr.translateZ(-12);
     }
@@ -304,15 +313,6 @@ function updateOcean(me) {
   ocean.materialOcean.uniforms[ "u_viewMatrix" ].value = camera.matrixWorldInverse;
   ocean.materialOcean.uniforms[ "u_cameraPosition" ].value = camera.position;
   ocean.materialOcean.depthTest = true;
-}
-
-function getRandomColor() {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
 }
 
 let renderInterval = setInterval(renderMainMenu, 1000 / 60);
