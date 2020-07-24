@@ -31,28 +31,16 @@ function setCanvasDimensions() {
 
 window.addEventListener('resize', debounce(40, setCanvasDimensions));
 
-var newShip;
-var shipModel;
-var shipMastOne;
-var shipMastTwo;
-var shipMastThree;
-var shipSailsOne;
-var shipSailsTwo;
-var shipSailsThree;
 var ocean;
+var objectsInSceneStart;
+var shipColor = getRandomColor();
+var sailColor = 0xEFEFE9;
 
-var oceanCount = 5;
+var oceanCount = 10;
 function render() {
   const { me, others, cannonballs } = getCurrentState();
   if (!me) {
     return;
-  }
-
-  if (newShip) {
-    loadShip();
-    newShip = false;
-    console.log(others);
-    console.log(cannonballs);
   }
 
   if (oceanCount <= 0) {
@@ -67,14 +55,41 @@ function render() {
   cannonballs.forEach(updateCannons.bind(null, me));
   updateCam(me);
   renderer.render(scene, camera);
-  while (scene.children.length > 2) {
+  while (scene.children.length > objectsInSceneStart) {
     scene.remove(scene.children[scene.children.length - 1]);
   }
 }
 
+function init() {
+  loadWarship();
+  loadLargeShip();
+}
+
+function createHealthBar(x, y, z, health, camX, camHeight, camZ) {
+  var geometry = new THREE.PlaneGeometry( 17, 3, 1 );
+  var material = new THREE.MeshBasicMaterial( {color: 0x52130B, side: THREE.DoubleSide} );
+  var background = new THREE.Mesh( geometry, material );
+  scene.add( background );
+  background.position.set(x, y+35, z);
+  background.lookAt(camX, camHeight, camZ);
+  background.translateZ(-0.1);
+  var geometry = new THREE.PlaneGeometry( health/100.0 * 15, 2, 1 );
+  var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
+  var hp = new THREE.Mesh( geometry, material );
+  scene.add( hp );
+  hp.position.set(x, y+35, z);
+  hp.lookAt(camX, camHeight, camZ);
+}
+
+function updatePlayer(me, player) {
+  const {x, y, z, angleY, angleX, angleZ, health} = player;
+  const {camX, camHeight, camZ} = me;
+  createWarship(x, y, z, angleX, angleY, angleZ);
+  createHealthBar(x, y, z, health, camX, camHeight, camZ);
+}
+
 function updateCannons(me, cannon) {
   const {x, y, z, radius} = cannon;
-  console.log(x + " " + y + " " + z);
   var geometry = new THREE.SphereGeometry( radius, 5, 5 );
   var material = new THREE.MeshBasicMaterial( {color: 0xb02f2a} );
   var sphere = new THREE.Mesh( geometry, material );
@@ -88,39 +103,6 @@ function updateCam(me) {
   camera.lookAt(x, 0, z);
 }
 
-function loadShip() {
-  var loader = new OBJLoader();
-	loader.load( '/assets/OBJ/SM_Veh_Boat_Warship_01_Hull_Pirate.obj', function ( object ) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipModel = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_01_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipMastOne = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_02_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipMastTwo = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_03_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipMastThree = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_01_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipSailsOne = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_02_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipSailsTwo = object;
-  });
-  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_03_Pirate.obj", function (object) {
-    //object.scale.set(0.3, 0.3, 0.3);
-    shipSailsThree = object;
-  });
-  //shipModelTexture = THREE.TextureLoader.load('/assets/SourceFiles/Textures/Texture_01_A.png');
-}
-
 function createScene() {
   renderer.setSize(window.innerWidth, window.innerHeight - 32);
   document.body.appendChild(renderer.domElement);
@@ -130,94 +112,147 @@ function createScene() {
   var plane = new THREE.Mesh( geometry, material );
   plane.position.set(0, -2, 0);
   plane.rotation.set(Math.PI/2, 0, 0);
-  //scene.add( plane );
-  var light = new THREE.HemisphereLight( 0x1ecbe1, 0x080820, 1 );
+  var light = new THREE.HemisphereLight( 0xf9f9f9, 0x080820, 1 );
   scene.add( light );
   createOcean();
   scene.background = new THREE.Color( 0x1ecbe1 );
   light = new THREE.DirectionalLight(0xffffff, 1.0);
   light.position.set(0, 100, 0);
   scene.add(light);
+  objectsInSceneStart = scene.children.length-1;
 }
 
-var prevY = 0;
-function updatePlayer(me, player) {
-  const {id, x, y, z, angleY, angleX, angleZ, health} = player;
-  const {camX, camHeight, camZ} = me;
-  var cube = new THREE.Mesh();
-  cube = shipModel.clone();
-  scene.add(cube);
-  /*
-  var point = undefined;
-  if (oceanCount <= 0) {
-    var raycaster = new THREE.Raycaster(new THREE.Vector3(x, 30, z), new THREE.Vector3(0, -1, 0));
-    var intersects = raycaster.intersectObjects(scene.children, true);
-    console.log(intersects);
-  }
-  cube.position.set(x, -1, z);
-  if (!isUndefined(point)) {
-    cube.position.y = point;
-  }*/
-  cube.position.set(x, y, z);
-  cube.rotation.y = angleY;
-  cube.rotation.z = angleZ;
-  cube.rotation.x = angleX;
+var largeShip = [];
+function loadLargeShip() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Veh_Veh_Boat_Large_01_Hull_Pirate.obj', function ( object ) {
+    object.name = "hull";
+    object.children[0].material.color.set(shipColor);
+    largeShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Mast_01_Pirate.obj', function ( object ) {
+    object.name = "mast1";
+    object.children[0].material.color.set(shipColor);
+    largeShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Mast_02_Pirate.obj', function ( object ) {
+    object.name = "mast2";
+    object.children[0].material.color.set(shipColor);
+    largeShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_01_Pirate.obj', function ( object ) {
+    object.name = "sails1";
+    object.children[0].material.color.set(sailColor);
+    largeShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_02_Pirate.obj', function ( object ) {
+    object.name = "sails2";
+    object.children[0].material.color.set(sailColor);
+    largeShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_03_Pirate.obj', function ( object ) {
+    object.name = "sails3";
+    object.children[0].material.color.set(sailColor);
+    largeShip.push(object);
+  });
+}
 
-  var mastOne = new THREE.Mesh();
-  mastOne = shipMastOne.clone();
-  scene.add(mastOne);
-  mastOne.position.set(x, cube.position.y+8, z);
-  mastOne.rotation.y = angleY;
-  mastOne.rotation.z = angleZ;
-  mastOne.translateZ(8);
-  var mastTwo = new THREE.Mesh();
-  mastTwo = shipMastTwo.clone();
-  scene.add(mastTwo);
-  mastTwo.position.set(x, cube.position.y+6, z);
-  mastTwo.rotation.y = angleY;
-  mastTwo.rotation.z = angleZ;
-  var mastThree = new THREE.Mesh();
-  mastThree = shipMastThree.clone();
-  scene.add(mastThree);
-  mastThree.position.set(x, cube.position.y+11, z);
-  mastThree.rotation.y = angleY;
-  mastThree.rotation.z = angleZ;
-  mastThree.translateZ(-12);
+function createLargeShip(x, y, z, angleX, angleY, angleZ) {
+  largeShip.forEach(index => {
+    var curr = index.clone();
+    curr.rotation.x = angleX;
+    curr.rotation.y = angleY;
+    curr.rotation.z = angleZ;
+    if (curr.name === "hull") { 
+      curr.position.set(x, y+2, z);
+    } else if (curr.name === "mast1") {
+      curr.position.set(x, y+4, z);
+      curr.translateZ(10);
+    } else if (curr.name === "mast2") {
+      curr.position.set(x, y+4, z);
+    } else if (curr.name === "mast3") {
+      curr.position.set(x, y+4, z);
+      curr.translateZ(-12);
+    } else if (curr.name === "sails1") {
+      curr.position.set(x, y+8, z);
+      curr.translateZ(10);
+    } else if (curr.name === "sails2") {
+      curr.position.set(x, y+6, z);
+    } else if (curr.name === "sails3") {
+      curr.position.set(x, y+11, z);
+      curr.translateZ(-12);
+    }
+    scene.add(curr);
+  });
+}
 
-  var sailsOne = new THREE.Mesh();
-  sailsOne = shipSailsOne.clone();
-  scene.add(sailsOne);
-  sailsOne.position.set(x, cube.position.y+8, z);
-  sailsOne.rotation.y = angleY;
-  sailsOne.rotation.z = angleZ;
-  sailsOne.translateZ(8);
-  var sailsTwo = new THREE.Mesh();
-  sailsTwo = shipSailsTwo.clone();
-  scene.add(sailsTwo);
-  sailsTwo.position.set(x, cube.position.y+6, z);
-  sailsTwo.rotation.y = angleY;
-  sailsTwo.rotation.z = angleZ;
-  var sailsThree = new THREE.Mesh();
-  sailsThree = shipSailsThree.clone();
-  scene.add(sailsThree);
-  sailsThree.position.set(x, cube.position.y+11, z);
-  sailsThree.rotation.y = angleY;
-  sailsThree.rotation.z = angleZ;
-  sailsThree.translateZ(-12);
+var warship = [];
+function loadWarship() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Veh_Boat_Warship_01_Hull_Pirate.obj', function ( object ) {
+    object.name = "hull";
+    object.children[0].material.color.set(shipColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_01_Pirate.obj", function (object) {
+    object.name = "mast1";
+    object.children[0].material.color.set(shipColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_02_Pirate.obj", function (object) {
+    object.name = "mast2";
+    object.children[0].material.color.set(shipColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Mast_03_Pirate.obj", function (object) {
+    object.name = "mast3";
+    object.children[0].material.color.set(shipColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_01_Pirate.obj", function (object) {
+    object.name = "sails1";
+    object.children[0].material.color.set(sailColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_02_Pirate.obj", function (object) {
+    object.name = "sails2";
+    object.children[0].material.color.set(sailColor);
+    warship.push(object);
+  });
+  loader.load("/assets/OBJ/SM_Veh_Boat_Warship_01_Sails_03_Pirate.obj", function (object) {
+    object.name = "sails3";
+    object.children[0].material.color.set(sailColor);
+    warship.push(object);
+  });
+}
 
-  var geometry = new THREE.PlaneGeometry( 17, 3, 1 );
-  var material = new THREE.MeshBasicMaterial( {color: 0x52130B, side: THREE.DoubleSide} );
-  var plane = new THREE.Mesh( geometry, material );
-  scene.add( plane );
-  plane.position.set(x, cube.position.y+35, z);
-  plane.lookAt(camX, camHeight, camZ);
-  plane.translateZ(-0.1);
-  var geometry = new THREE.PlaneGeometry( health/100.0 * 15, 2, 1 );
-  var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
-  var plane = new THREE.Mesh( geometry, material );
-  scene.add( plane );
-  plane.position.set(x, cube.position.y+35, z);
-  plane.lookAt(camX, camHeight, camZ);
+function createWarship(x, y, z, angleX, angleY, angleZ) {
+  warship.forEach(index => {
+    var curr = index.clone();
+    curr.rotation.x = angleX;
+    curr.rotation.y = angleY;
+    curr.rotation.z = angleZ;
+    if (curr.name === "hull") { 
+      curr.position.set(x, y, z)
+    } else if (curr.name === "mast1") {
+      curr.position.set(x, y+8, z);
+      curr.translateZ(10);
+    } else if (curr.name === "mast2") {
+      curr.position.set(x, y+6, z);
+    } else if (curr.name === "mast3") {
+      curr.position.set(x, y+11, z);
+      curr.translateZ(-12);
+    } else if (curr.name === "sails1") {
+      curr.position.set(x, y+8, z);
+      curr.translateZ(10);
+    } else if (curr.name === "sails2") {
+      curr.position.set(x, y+6, z);
+    } else if (curr.name === "sails3") {
+      curr.position.set(x, y+11, z);
+      curr.translateZ(-12);
+    }
+    scene.add(curr);
+  });
 }
 
 function renderMainMenu() {
@@ -271,12 +306,21 @@ function updateOcean(me) {
   ocean.materialOcean.depthTest = true;
 }
 
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 let renderInterval = setInterval(renderMainMenu, 1000 / 60);
 
 // Replaces main menu rendering with game rendering.
 export function startRendering() {
   clearInterval(renderInterval);
-  newShip = true;
+  init();
   renderInterval = setInterval(render, 1000 / 60);
 }
 
