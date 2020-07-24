@@ -37,6 +37,7 @@ var sailColor = 0xEFEFE9;
 
 var oceanCount = 10;
 function render() {
+  canvas.style.cursor = 'none';
   const { me, others, cannonballs } = getCurrentState();
   if (!me) {
     return;
@@ -100,7 +101,7 @@ function updateCam(me) {
 function createScene() {
   renderer.setSize(window.innerWidth, window.innerHeight - 32);
   document.body.appendChild(renderer.domElement);
-  canvas.style.cursor = 'none';
+  canvas.style.cursor = 'default';
   var geometry = new THREE.PlaneGeometry( 100, 100, 32 );
   var material = new THREE.MeshLambertMaterial( {color: 0x1873e7, side: THREE.DoubleSide} );
   var plane = new THREE.Mesh( geometry, material );
@@ -118,9 +119,9 @@ function createScene() {
 var bomb;
 function loadBomb() {
   var loader = new OBJLoader();
-	loader.load( '/assets/OBJ/SM_Item_Bomb_01.obj', function ( object ) {
+	loader.load( '/assets/OBJ/SM_Prop_CannonBalls_01.obj', function ( object ) {
     object.name = "bomb";
-    object.scale.set(6, 6, 6);
+    object.scale.set(7, 7, 7);
     bomb = object;
   });
 }
@@ -426,7 +427,6 @@ function createLabel(x, y, z, name, camX, camHeight, camZ) {
 
 function makeLabelCanvas(baseWidth, size, name) {
   const borderSize = 2;
-  console.log(name);
   const ctx = document.createElement('canvas').getContext('2d');
   const font =  `${size}px bold sans-serif`;
   ctx.font = font;
