@@ -62,6 +62,9 @@ function render() {
 function init() {
   loadWarship();
   loadLargeShip();
+  loadMediumShip();
+  loadSmallShip();
+  loadBomb();
 }
 
 function createHealthBar(x, y, z, health, camX, camHeight, camZ) {
@@ -80,25 +83,12 @@ function createHealthBar(x, y, z, health, camX, camHeight, camZ) {
   hp.lookAt(camX, camHeight, camZ);
 }
 
-// this function is going through every player in each update
-// me is always the playe viewing stuff
-// player is the current player that we are iterating through
 function updatePlayer(me, player) {
-  // if this 1 has color, all clients are most current player's color
-  const {x, y, z, angleY, angleX, angleZ, health, color} = player;
-  // if this one is color, all players in client match the client color.
+  const {x, y, z, angleY, angleX, angleZ, health, color, username} = player;
   const {camX, camHeight, camZ} = me;
   createWarship(x, y, z, angleX, angleY, angleZ, color);
   createHealthBar(x, y, z, health, camX, camHeight, camZ);
-}
-
-function updateCannons(me, cannon) {
-  const {x, y, z, radius} = cannon;
-  var geometry = new THREE.SphereGeometry( radius, 5, 5 );
-  var material = new THREE.MeshBasicMaterial( {color: 0xb02f2a} );
-  var sphere = new THREE.Mesh( geometry, material );
-  scene.add( sphere );
-  sphere.position.set(x, y, z);
+  createLabel(x, y, z, " " + username.substring(0, username.length - 3) + " ", camX, camHeight, camZ);
 }
 
 function updateCam(me) {
@@ -119,11 +109,91 @@ function createScene() {
   var light = new THREE.HemisphereLight( 0xf9f9f9, 0x080820, 1 );
   scene.add( light );
   createOcean();
-  scene.background = new THREE.Color( 0x1ecbe1 );
   light = new THREE.DirectionalLight(0xffffff, 1.0);
   light.position.set(0, 100, 0);
   scene.add(light);
   objectsInSceneStart = scene.children.length-1;
+}
+
+var bomb;
+function loadBomb() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Item_Bomb_01.obj', function ( object ) {
+    object.name = "bomb";
+    object.scale.set(6, 6, 6);
+    bomb = object;
+  });
+}
+
+function updateCannons(me, cannon) {
+  const {x, y, z, radius} = cannon;
+  var n = bomb.clone();
+  n.children[0].material = bomb.children[0].material.clone();
+  n.children[0].material.color.set(0xFB9404);
+  n.position.set(x, y, z);
+  scene.add( n );
+}
+
+var smallShip;
+function loadSmallShip() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Veh_Boat_Small_01_Hull_Pirate.obj', function ( object ) {
+    object.name = "hull";
+    smallShip = object;
+  });
+}
+
+function createSmallShip(x, y, z, angleX, angleY, angleZ, colorStr) {
+  var color = colorStr.substring(0, 7);
+  var curr = smallShip.clone();
+  curr.rotation.x = angleX;
+  curr.rotation.y = angleY;
+  curr.rotation.z = angleZ;
+  curr.children[0].material = smallShip.children[0].material.clone();
+  curr.children[0].material.color.set(color);
+  curr.position.set(x, y+10, z);
+  scene.add(curr);
+}
+
+var mediumShip = [];
+function loadMediumShip() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Veh_Boat_Medium_01_Hull_Pirate.obj', function ( object ) {
+    object.name = "hull";
+    mediumShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Medium_01_Mast_Pirate.obj', function ( object ) {
+    object.name = "mast";
+    mediumShip.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Veh_Boat_Medium_01_Sails_Pirate.obj', function ( object ) {
+    object.name = "sails";
+    mediumShip.push(object);
+  });
+}
+
+function createMediumShip(x, y, z, angleX, angleY, angleZ, colorStr) {
+  mediumShip.forEach(index => {
+    var color = colorStr.substring(0, 7);
+    var curr = index.clone();
+    curr.rotation.x = angleX;
+    curr.rotation.y = angleY;
+    curr.rotation.z = angleZ;
+    if (curr.name === "hull") { 
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y, z);
+    } else if (curr.name === "mast") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y, z);
+    } else if (curr.name === "sails") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
+      curr.position.set(x, y, z);
+    }
+    scene.add(curr);
+  });
 }
 
 var largeShip = [];
@@ -155,7 +225,12 @@ function loadLargeShip() {
     object.name = "sails3";
     object.children[0].material.color.set(sailColor);
     largeShip.push(object);
-  });
+  });/*
+  loader.load( '/assets/OBJ/SM_Veh_Veh_Boat_Large_01_Rigging.obj', function ( object ) {
+    object.name = "rigging";
+    object.children[0].material.color.set(sailColor);
+    largeShip.push(object);
+  });*/
 }
 
 function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
@@ -166,23 +241,36 @@ function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
     curr.rotation.y = angleY;
     curr.rotation.z = angleZ;
     if (curr.name === "hull") { 
-      curr.position.set(x, y+2, z);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y, z);
     } else if (curr.name === "mast1") {
-      curr.position.set(x, y+4, z);
-      curr.translateZ(10);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y+3, z);
     } else if (curr.name === "mast2") {
-      curr.position.set(x, y+4, z);
-    } else if (curr.name === "mast3") {
-      curr.position.set(x, y+4, z);
-      curr.translateZ(-12);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y+3, z);
+      curr.translateZ(7);
     } else if (curr.name === "sails1") {
-      curr.position.set(x, y+8, z);
-      curr.translateZ(10);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
+      curr.position.set(x, y+3, z);
     } else if (curr.name === "sails2") {
-      curr.position.set(x, y+6, z);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
+      curr.position.set(x, y+3, z);
+      curr.translateZ(7);
     } else if (curr.name === "sails3") {
-      curr.position.set(x, y+11, z);
-      curr.translateZ(-12);
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(sailColor);
+      curr.position.set(x, y+5, z);
+      curr.translateZ(2);
+    } else if (curr.name === "rigging") {
+      curr.children[0].material = index.children[0].material.clone();
+      curr.children[0].material.color.set(color);
+      curr.position.set(x, y+3, z);
     }
     scene.add(curr);
   });
@@ -247,6 +335,7 @@ function createWarship(x, y, z, angleX, angleY, angleZ, colorStr) {
       curr.position.set(x, y+11, z);
       curr.translateZ(-12);
     } else if (curr.name === "sails1") {
+      curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
       curr.position.set(x, y+8, z);
       curr.translateZ(10);
@@ -271,7 +360,7 @@ function renderMainMenu() {
 }
 
 function createOcean() {
-  var gsize = 800;
+  var gsize = 1200;
   var res = 1024;
   var gres = res / 2;
   var origx = 0;
@@ -313,6 +402,59 @@ function updateOcean(me) {
   ocean.materialOcean.uniforms[ "u_viewMatrix" ].value = camera.matrixWorldInverse;
   ocean.materialOcean.uniforms[ "u_cameraPosition" ].value = camera.position;
   ocean.materialOcean.depthTest = true;
+}
+
+function createLabel(x, y, z, name, camX, camHeight, camZ) {
+  const labelGeometry = new THREE.PlaneGeometry(15, 2, 1);
+  const canvas = makeLabelCanvas(name.length*15, 200, name);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  const labelMaterial = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.DoubleSide,
+    transparent: true,
+  });
+  const label = new THREE.Mesh(labelGeometry, labelMaterial);
+  scene.add(label);
+  label.position.set(x, y+40, z);
+  label.lookAt(camX, camHeight, camZ);
+  label.scale.x = canvas.width * 0.01;
+  label.scale.y = canvas.height * 0.01;
+}
+
+function makeLabelCanvas(baseWidth, size, name) {
+  const borderSize = 2;
+  console.log(name);
+  const ctx = document.createElement('canvas').getContext('2d');
+  const font =  `${size}px bold sans-serif`;
+  ctx.font = font;
+  // measure how long the name will be
+  const textWidth = ctx.measureText(name).width;
+
+  const doubleBorderSize = borderSize * 2;
+  const width = baseWidth + doubleBorderSize;
+  const height = size + doubleBorderSize;
+  ctx.canvas.width = width;
+  ctx.canvas.height = height;
+
+  // need to set font again after resizing canvas
+  ctx.font = font;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(0, 0, width, height);
+
+  // scale to fit but don't stretch
+  const scaleFactor = Math.min(1, baseWidth / textWidth);
+  ctx.translate(width / 2, height / 2);
+  ctx.scale(scaleFactor, 1);
+  ctx.fillStyle = 'white';
+  ctx.fillText(name, 0, 0);
+
+  return ctx.canvas;
 }
 
 let renderInterval = setInterval(renderMainMenu, 1000 / 60);

@@ -16,14 +16,14 @@ class Player extends ObjectClass {
     this.shouldTurnLeft = false;
     this.currTurnRate = 0;
     this.maxTurnRate = 1 * Math.PI / 180;
-    this.turnAccel = 0.02 * Math.PI / 180;
+    this.turnAccel = 0.025 * Math.PI / 180;
     this.camX = 0;
     this.camZ = 0;
-    this.camHeight = 120; //50 - 120
+    this.camHeight = 100; //50 - 120
     this.camAngle = 0;
     this.camAngleStep = 2 * Math.PI/180;
-    this.camRadius = 180; // 80 - 180
-    this.speed = 0.5;
+    this.camRadius = 160; // 80 - 180
+    this.speed = 0.3;
     this.cannonSpeed = 1;
     this.created = 1;
     this.reloadTime = 1;
@@ -59,12 +59,21 @@ class Player extends ObjectClass {
     if (this.fire) {
       this.fire = false;
       var cannonballs = [];
-      cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.angleY, -Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.angleY, Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.angleY, -Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.angleY, Math.PI/2));
-      cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.angleY, -Math.PI/2));
+      if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
+      } else {
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+      }
       return cannonballs;
     }
 
@@ -172,6 +181,7 @@ class Player extends ObjectClass {
       y: this.y,
       angleX: this.angleX,
       color: this.color,
+      username: this.username,
     };
   }
 }
