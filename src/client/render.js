@@ -406,7 +406,7 @@ function updateOcean(me) {
 
 function createLabel(x, y, z, name, camX, camHeight, camZ) {
   const labelGeometry = new THREE.PlaneGeometry(15, 2, 1);
-  const canvas = makeLabelCanvas(name.length*15, 200, name);
+  const canvas = makeLabelCanvas(80, 200, name);
   const texture = new THREE.CanvasTexture(canvas);
   texture.minFilter = THREE.LinearFilter;
   texture.wrapS = THREE.ClampToEdgeWrapping;
