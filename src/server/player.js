@@ -6,7 +6,7 @@ class Player extends ObjectClass {
   constructor(id, username, x, z) {
     super(id);
     this.x = x;
-    this.y = -3;
+    this.y = 0;
     this.z = z;
     this.username = username;
     this.angleY = 0;
@@ -25,7 +25,6 @@ class Player extends ObjectClass {
     this.camRadius = 160; // 80 - 180
     this.speed = 0.3;
     this.cannonSpeed = 1;
-    this.created = 1;
     this.reloadTime = 1;
     this.fireCooldown = 0;
     this.fire = false;
@@ -34,6 +33,9 @@ class Player extends ObjectClass {
     this.isCamTurnLeft = false;
     this.time = 0;
     this.color = this.getRandomColor();
+    this.gold = 0;
+    this.ship = 3;
+    this.scale = 1;
   }
 
   getRandomColor() {
@@ -45,14 +47,25 @@ class Player extends ObjectClass {
     return color;
   }
 
+  getBaseLog(x, y) {
+    return Math.log(y) / Math.log(x);
+  }
+
   update(dt) {
-    this.time += dt;
     super.update(dt);
-    this.created--;
+    this.gold += 0.05;
+
+    this.scale = 0.05 * (this.gold);
+    if (this.scale < 0.5) {
+      this.scale = 0.5;
+    } else if (this.scale > 4) {
+      this.scale = 4;
+    }
+    this.camHeight = 120*this.scale; 
+    this.camRadius = 180*this.scale;
 
     this.calcShipAngle();
     this.moveForward();
-    //this.calcBob(this.time);
 
     this.fireCooldown -= dt;
 
@@ -62,17 +75,17 @@ class Player extends ObjectClass {
       if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
         cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
         cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
       } else {
         cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
         cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
       }
       return cannonballs;
     }
@@ -182,6 +195,9 @@ class Player extends ObjectClass {
       angleX: this.angleX,
       color: this.color,
       username: this.username,
+      gold: this.gold,
+      ship: this.ship,
+      scale: this.scale,
     };
   }
 }

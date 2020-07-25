@@ -45,7 +45,7 @@ function render() {
 
   if (oceanCount <= 0) {
     updateOcean(me);
-    oceanCount = 10;
+    oceanCount = 5;
   } else {
     oceanCount--;
   }
@@ -68,28 +68,33 @@ function init() {
   loadBomb();
 }
 
-function createHealthBar(x, y, z, health, camX, camHeight, camZ) {
-  var geometry = new THREE.PlaneGeometry( 17, 3, 1 );
+function createHealthBar(x, y, z, health, camX, camHeight, camZ, scale) {
+  var geometry = new THREE.PlaneGeometry( scale*16.5, 3.5*scale, 1 );
   var material = new THREE.MeshBasicMaterial( {color: 0x52130B, side: THREE.DoubleSide} );
   var background = new THREE.Mesh( geometry, material );
   scene.add( background );
-  background.position.set(x, y+35, z);
+  background.position.set(x, y+35*scale, z);
   background.lookAt(camX, camHeight, camZ);
   background.translateZ(-0.1);
-  var geometry = new THREE.PlaneGeometry( health/100.0 * 15, 2, 1 );
+  var geometry = new THREE.PlaneGeometry( health/100.0 * scale*15, 2*scale, 1 );
   var material = new THREE.MeshBasicMaterial( {color: 0x30dd22, side: THREE.DoubleSide} );
   var hp = new THREE.Mesh( geometry, material );
   scene.add( hp );
-  hp.position.set(x, y+35, z);
+  hp.position.set(x, y+35*scale, z);
   hp.lookAt(camX, camHeight, camZ);
 }
 
 function updatePlayer(me, player) {
-  const {x, y, z, angleY, angleX, angleZ, health, color, username} = player;
+  const {x, y, z, angleY, angleX, angleZ, health, color, username, ship, scale} = player;
   const {camX, camHeight, camZ} = me;
-  createWarship(x, y, z, angleX, angleY, angleZ, color);
-  createHealthBar(x, y, z, health, camX, camHeight, camZ);
-  createLabel(x, y, z, " " + username.substring(0, username.length - 3) + " ", camX, camHeight, camZ);
+  switch (ship) {
+    case 0: createSmallShip(x, y, z, angleX, angleY, angleZ, color, scale); break;
+    case 1: createMediumShip(x, y, z, angleX, angleY, angleZ, color, scale); break;
+    case 2: createLargeShip(x, y, z, angleX, angleY, angleZ, color, scale); break;
+    case 3: createWarship(x, y, z, angleX, angleY, angleZ, color, scale); break;
+  }
+  createHealthBar(x, y, z, health, camX, camHeight, camZ, scale);
+  createLabel(x, y, z, " " + username.substring(0, username.length - 3) + " ", camX, camHeight, camZ, scale);
 }
 
 function updateCam(me) {
@@ -99,6 +104,8 @@ function updateCam(me) {
 }
 
 function createScene() {
+  camera.far = 3000;
+  camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight - 32);
   document.body.appendChild(renderer.domElement);
   canvas.style.cursor = 'default';
@@ -144,9 +151,10 @@ function loadSmallShip() {
   });
 }
 
-function createSmallShip(x, y, z, angleX, angleY, angleZ, colorStr) {
+function createSmallShip(x, y, z, angleX, angleY, angleZ, colorStr, scale) {
   var color = colorStr.substring(0, 7);
   var curr = smallShip.clone();
+  curr.scale.set(scale, scale, scale);
   curr.rotation.x = angleX;
   curr.rotation.y = angleY;
   curr.rotation.z = angleZ;
@@ -173,10 +181,11 @@ function loadMediumShip() {
   });
 }
 
-function createMediumShip(x, y, z, angleX, angleY, angleZ, colorStr) {
+function createMediumShip(x, y, z, angleX, angleY, angleZ, colorStr, scale) {
   mediumShip.forEach(index => {
     var color = colorStr.substring(0, 7);
     var curr = index.clone();
+    curr.scale.set(scale, scale, scale);
     curr.rotation.x = angleX;
     curr.rotation.y = angleY;
     curr.rotation.z = angleZ;
@@ -214,17 +223,14 @@ function loadLargeShip() {
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_01_Pirate.obj', function ( object ) {
     object.name = "sails1";
-    object.children[0].material.color.set(sailColor);
     largeShip.push(object);
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_02_Pirate.obj', function ( object ) {
     object.name = "sails2";
-    object.children[0].material.color.set(sailColor);
     largeShip.push(object);
   });
   loader.load( '/assets/OBJ/SM_Veh_Boat_Large_Sails_03_Pirate.obj', function ( object ) {
     object.name = "sails3";
-    object.children[0].material.color.set(sailColor);
     largeShip.push(object);
   });/*
   loader.load( '/assets/OBJ/SM_Veh_Veh_Boat_Large_01_Rigging.obj', function ( object ) {
@@ -234,10 +240,11 @@ function loadLargeShip() {
   });*/
 }
 
-function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
+function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr, scale) {
   largeShip.forEach(index => {
     var color = colorStr.substring(0, 7);
     var curr = index.clone();
+    curr.scale.set(scale, scale, scale);
     curr.rotation.x = angleX;
     curr.rotation.y = angleY;
     curr.rotation.z = angleZ;
@@ -253,7 +260,7 @@ function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(color);
       curr.position.set(x, y+3, z);
-      curr.translateZ(7);
+      curr.translateZ(11);
     } else if (curr.name === "sails1") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
@@ -261,13 +268,13 @@ function createLargeShip(x, y, z, angleX, angleY, angleZ, colorStr) {
     } else if (curr.name === "sails2") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
-      curr.position.set(x, y+3, z);
-      curr.translateZ(7);
+      curr.position.set(x, y+4, z);
+      curr.translateZ(11);
     } else if (curr.name === "sails3") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
-      curr.position.set(x, y+5, z);
-      curr.translateZ(2);
+      curr.position.set(x, y+8, z);
+      curr.translateZ(4);
     } else if (curr.name === "rigging") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(color);
@@ -310,10 +317,11 @@ function loadWarship() {
   });
 }
 
-function createWarship(x, y, z, angleX, angleY, angleZ, colorStr) {
+function createWarship(x, y, z, angleX, angleY, angleZ, colorStr, scale) {
   warship.forEach(index => {
     var color = colorStr.substring(0, 7);
     var curr = index.clone();
+    curr.scale.set(scale, scale, scale);
     curr.rotation.x = angleX;
     curr.rotation.y = angleY;
     curr.rotation.z = angleZ;
@@ -324,31 +332,31 @@ function createWarship(x, y, z, angleX, angleY, angleZ, colorStr) {
     } else if (curr.name === "mast1") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(color);
-      curr.position.set(x, y+8, z);
-      curr.translateZ(10);
+      curr.position.set(x, y+8*scale, z);
+      curr.translateZ(10*scale);
     } else if (curr.name === "mast2") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(color);
-      curr.position.set(x, y+6, z);
+      curr.position.set(x, y+6*scale, z);
     } else if (curr.name === "mast3") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(color);
-      curr.position.set(x, y+11, z);
-      curr.translateZ(-12);
+      curr.position.set(x, y+11*scale, z);
+      curr.translateZ(-2-10*scale);
     } else if (curr.name === "sails1") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
-      curr.position.set(x, y+8, z);
-      curr.translateZ(10);
+      curr.position.set(x, y+8*scale, z);
+      curr.translateZ(10*scale);
     } else if (curr.name === "sails2") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
-      curr.position.set(x, y+6, z);
+      curr.position.set(x, y+6*scale, z);
     } else if (curr.name === "sails3") {
       curr.children[0].material = index.children[0].material.clone();
       curr.children[0].material.color.set(sailColor);
-      curr.position.set(x, y+11, z);
-      curr.translateZ(-12);
+      curr.position.set(x, y+11*scale, z);
+      curr.translateZ(-2-10*scale);
     }
     scene.add(curr);
   });
@@ -361,8 +369,8 @@ function renderMainMenu() {
 }
 
 function createOcean() {
-  var gsize = 1200;
-  var res = 1024;
+  var gsize = 2000;
+  var res = 256;
   var gres = res / 2;
   var origx = 0;
   var origz = 0;
@@ -405,9 +413,9 @@ function updateOcean(me) {
   ocean.materialOcean.depthTest = true;
 }
 
-function createLabel(x, y, z, name, camX, camHeight, camZ) {
-  const labelGeometry = new THREE.PlaneGeometry(15, 2, 1);
-  const canvas = makeLabelCanvas(80, 200, name);
+function createLabel(x, y, z, name, camX, camHeight, camZ, scale) {
+  const labelGeometry = new THREE.PlaneGeometry(scale*5, scale*2, 1);
+  const canvas = makeLabelCanvas(300, 300, name);
   const texture = new THREE.CanvasTexture(canvas);
   texture.minFilter = THREE.LinearFilter;
   texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -419,7 +427,7 @@ function createLabel(x, y, z, name, camX, camHeight, camZ) {
   });
   const label = new THREE.Mesh(labelGeometry, labelMaterial);
   scene.add(label);
-  label.position.set(x, y+40, z);
+  label.position.set(x, y+41*scale, z);
   label.lookAt(camX, camHeight, camZ);
   label.scale.x = canvas.width * 0.01;
   label.scale.y = canvas.height * 0.01;

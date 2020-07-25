@@ -106,7 +106,7 @@ class Game {
     return Object.values(this.players)
       .sort((p1, p2) => p2.score - p1.score)
       .slice(0, 5)
-      .map(p => ({ username: p.username, score: Math.round(p.score) }));
+      .map(p => ({ username: p.username, gold: Math.round(p.gold) }));
   }
 
   createUpdate(player, leaderboard) {

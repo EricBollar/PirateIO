@@ -28,7 +28,7 @@ class Cannonball extends ObjectClass {
   calcPosition() {
     this.x += Math.sin(this.dir + this.angle) * this.speed * 2;
     this.z += Math.cos(this.dir + this.angle) * this.speed * 2;
-    if (this.adjust) {
+    if (this.adjust) {2
       this.x += Math.sin(this.dir) * this.speed * this.shipSpeed;
       this.z += Math.cos(this.dir) * this.speed * this.shipSpeed;
     }
