@@ -14,6 +14,7 @@ import './css/main.css';
 const playMenu = document.getElementById('play-menu');
 const playButton = document.getElementById('play-button');
 const usernameInput = document.getElementById('username-input');
+const background = document.getElementById('background');
 
 Promise.all([
   connect(onGameOver),
@@ -25,6 +26,7 @@ Promise.all([
     // Play!
     play(usernameInput.value);
     playMenu.classList.add('hidden');
+    background.classList.add('hidden');
     initState();
     startCapturingInput();
     startRendering();

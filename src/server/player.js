@@ -54,11 +54,11 @@ class Player extends ObjectClass {
 
   update(dt) {
     super.update(dt);
-    this.gold += 0.05;
+    this.gold += 0.02;
 
-    this.scale = 0.05 * (this.gold);
-    if (this.scale < 0.5) {
-      this.scale = 0.5;
+    this.scale = 0.02 * (this.gold);
+    if (this.scale < 1) {
+      this.scale = 1;
     } else if (this.scale > 4) {
       this.scale = 4;
     }

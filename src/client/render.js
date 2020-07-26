@@ -15,7 +15,6 @@ const { PLAYER_RADIUS, PLAYER_MAX_HP, BULLET_RADIUS, MAP_SIZE } = Constants;
 
 // Get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
-setCanvasDimensions();
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer({canvas});
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);;
@@ -157,13 +156,13 @@ function createChest(x, y, z, angle) {
     console.log(angle);
     var color = 0x956013;
     var curr = index.clone();
-    curr.scale.set(30, 30, 30);
+    curr.scale.set(25, 25, 25);
     curr.children[0].material = index.children[0].material.clone();
     curr.children[0].material.color.set(color);
     curr.rotation.y = angle;
     if (curr.name === "lid") {
       curr.position.set(x, y+5, z);
-      curr.translateZ(-7);
+      curr.translateZ(-5);
     } else if (curr.name === "chest") {
       curr.position.set(x, y, z);
     }
