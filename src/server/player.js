@@ -72,21 +72,21 @@ class Player extends ObjectClass {
     if (this.fire) {
       this.fire = false;
       var cannonballs = [];
-      if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
-        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true));
-      } else {
-        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
-        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
-      }
+      //if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+      // } else {
+      //   cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
+      //   cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
+      //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false, this.scale));
+      //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false, this.scale));
+      //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false, this.scale));
+      //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false, this.scale));
+      // }
       return cannonballs;
     }
 

@@ -3,7 +3,7 @@ const ObjectClass = require('./object');
 const Constants = require('../shared/constants');
 
 class Cannonball extends ObjectClass {
-  constructor(parentID, startX, startZ, speed, shipSpeed, dir, angle, adjust) {
+  constructor(parentID, startX, startZ, speed, shipSpeed, dir, angle, adjust, shipScale) {
     super(shortid());
     this.parentID = parentID;
     this.dir = dir;
@@ -15,9 +15,10 @@ class Cannonball extends ObjectClass {
     this.parabolaX = 0;
     this.speed = speed;
     this.angle = angle;
-    this.radius = 1;
+    this.radius = 20*shipScale;
     this.shipSpeed = shipSpeed;
     this.adjust = adjust;
+    this.shipScale = shipScale;
   }
 
   update(dt) {
@@ -26,13 +27,13 @@ class Cannonball extends ObjectClass {
   }
 
   calcPosition() {
-    this.x += Math.sin(this.dir + this.angle) * this.speed * 2;
-    this.z += Math.cos(this.dir + this.angle) * this.speed * 2;
-    if (this.adjust) {2
+    this.x += Math.sin(this.dir + this.angle) * this.speed * 2 * this.shipScale;
+    this.z += Math.cos(this.dir + this.angle) * this.speed * 2 * this.shipScale;
+    if (this.adjust) {
       this.x += Math.sin(this.dir) * this.speed * this.shipSpeed;
       this.z += Math.cos(this.dir) * this.speed * this.shipSpeed;
     }
-    this.y = -(1.0/80) * Math.pow(this.parabolaX - 25, 2) + 8;
+    this.y = -(1.0/(160*this.shipScale)) * Math.pow(this.parabolaX - 25*this.shipScale, 2) + 4*this.shipScale;
     this.parabolaX += this.speed;
   }
 

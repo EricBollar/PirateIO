@@ -128,7 +128,6 @@ function loadBomb() {
   var loader = new OBJLoader();
 	loader.load( '/assets/OBJ/SM_Prop_CannonBalls_01.obj', function ( object ) {
     object.name = "bomb";
-    object.scale.set(7, 7, 7);
     bomb = object;
   });
 }
@@ -138,6 +137,7 @@ function updateCannons(me, cannon) {
   var n = bomb.clone();
   n.children[0].material = bomb.children[0].material.clone();
   n.children[0].material.color.set(0xFB9404);
+  n.scale.set(radius, radius, radius);
   n.position.set(x, y, z);
   scene.add( n );
 }
