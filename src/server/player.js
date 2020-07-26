@@ -56,14 +56,16 @@ class Player extends ObjectClass {
     super.update(dt);
     this.gold += 0.02;
 
+    this.turnAccel = 0.025 / this.scale * Math.PI / 180;
+
     this.scale = 0.02 * (this.gold);
     if (this.scale < 1) {
       this.scale = 1;
     } else if (this.scale > 4) {
       this.scale = 4;
     }
-    this.camHeight = 120*this.scale; 
-    this.camRadius = 180*this.scale;
+    this.camHeight = 120*this.scale - 5 * this.scale * this.scale; 
+    this.camRadius = 180*this.scale - 5 * this.scale * this.scale;
 
     this.calcShipAngle();
     this.moveForward();
