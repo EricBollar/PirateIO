@@ -1,5 +1,6 @@
 const ObjectClass = require('./object');
 const Cannonball = require('./cannonball');
+const Chest = require('./chest');
 const Constants = require('../shared/constants');
 
 class Player extends ObjectClass {
@@ -110,6 +111,19 @@ class Player extends ObjectClass {
       this.fireCooldown = this.reloadTime;
       this.fire = true;
     }
+  }
+
+  createChest() {
+    var chests = [];
+    var ran = 0;
+    for (let i = this.gold+50; i > 0; i -= 50) {
+      ran += 15;
+      if (ran > 60) {
+        ran = 60;
+      }
+      chests.push(new Chest(this.id, this.x+Math.random()*ran, this.z+Math.random()*ran));
+    }
+    return chests;
   }
 
   camTurnRight(bool) {

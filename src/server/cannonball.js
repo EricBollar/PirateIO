@@ -33,12 +33,12 @@ class Cannonball extends ObjectClass {
       this.x += Math.sin(this.dir) * this.speed * this.shipSpeed;
       this.z += Math.cos(this.dir) * this.speed * this.shipSpeed;
     }
-    this.y = -(1.0/(160*this.shipScale)) * Math.pow(this.parabolaX - 25*this.shipScale, 2) + 4*this.shipScale;
+    this.y = -(1.0/(40*this.shipScale)) * Math.pow(this.parabolaX - 25*this.shipScale/4, 2) + 8;
     this.parabolaX += this.speed;
   }
 
   distanceTo(x, z) {
-    return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.z - z, 2));
+    return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.z - z, 2) + Math.pow(this.y, 2));
   }
 
   serializeForUpdate() {

@@ -7,6 +7,7 @@ class Game {
     this.sockets = {};
     this.players = {};
     this.cannonballs = [];
+    this.chests = [];
     this.lastUpdateTime = Date.now();
     this.shouldSendUpdate = false;
     setInterval(this.update.bind(this), 1000 / 60);
@@ -60,6 +61,7 @@ class Game {
 
     // Update each player
     const cannonballsToRemove = [];
+    const chestsToRemove = [];
     Object.keys(this.sockets).forEach(playerID => {
       const socket = this.sockets[playerID];
       const player = this.players[playerID];
@@ -73,11 +75,24 @@ class Game {
           cannonballsToRemove.push(cannonball);
         }
       })
+      this.chests.forEach(chest => {
+        if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
+          player.gold += 50;
+          chestsToRemove.push(chest);
+        }
+      })
       if (player.health <= 0) {
         socket.emit(Constants.MSG_TYPES.GAME_OVER);
+        var newChests = player.createChest();
+        newChests.forEach(c => (this.chests.push(c)));
         this.removePlayer(socket);
       }
     });
+
+    this.chests.forEach(chest => {
+      chest.update(dt);
+    });
+    this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
 
     this.cannonballs.forEach(cannonball => {
       if (cannonball.y < -1) {
@@ -122,6 +137,7 @@ class Game {
       me: player.serializeForUpdate(),
       others: Object.values(this.players).map(p => p.serializeForUpdate()),
       cannonballs: this.cannonballs.map(b => b.serializeForUpdate()),
+      chests: this.chests.map(u => u.serializeForUpdate()),
       leaderboard,
     };
   }

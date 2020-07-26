@@ -38,7 +38,7 @@ var sailColor = 0xEFEFE9;
 var oceanCount = 10;
 function render() {
   canvas.style.cursor = 'none';
-  const { me, others, cannonballs } = getCurrentState();
+  const { me, others, cannonballs, chests } = getCurrentState();
   if (!me) {
     return;
   }
@@ -53,6 +53,7 @@ function render() {
   updatePlayer(me, me);
   others.forEach(updatePlayer.bind(null, me));
   cannonballs.forEach(updateCannons.bind(null, me));
+  chests.forEach(updateChests.bind(null, me));
   updateCam(me);
   renderer.render(scene, camera);
   while (scene.children.length > objectsInSceneStart) {
@@ -66,6 +67,7 @@ function init() {
   loadMediumShip();
   loadSmallShip();
   loadBomb();
+  loadChest();
 }
 
 function createHealthBar(x, y, z, health, camX, camHeight, camZ, scale) {
@@ -103,6 +105,11 @@ function updateCam(me) {
   camera.lookAt(x, 0, z);
 }
 
+function updateChests(me, chest) {
+  const {x, y, z, angle} = chest;
+  createChest(x, y, z, angle);
+}
+
 function createScene() {
   camera.far = 3000;
   camera.updateProjectionMatrix();
@@ -123,12 +130,44 @@ function createScene() {
   objectsInSceneStart = scene.children.length-1;
 }
 
+var chest = [];
+function loadChest() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Prop_Chest_Lid_03.obj', function ( object ) {
+    object.name = "lid";
+    chest.push(object);
+  });
+  loader.load( '/assets/OBJ/SM_Prop_Chest_03.obj', function ( object ) {
+    object.name = "chest";
+    chest.push(object);
+  });
+}
+
 var bomb;
 function loadBomb() {
   var loader = new OBJLoader();
 	loader.load( '/assets/OBJ/SM_Prop_CannonBalls_01.obj', function ( object ) {
     object.name = "bomb";
     bomb = object;
+  });
+}
+
+function createChest(x, y, z, angle) {
+  chest.forEach(index => {
+    console.log(angle);
+    var color = 0x956013;
+    var curr = index.clone();
+    curr.scale.set(30, 30, 30);
+    curr.children[0].material = index.children[0].material.clone();
+    curr.children[0].material.color.set(color);
+    curr.rotation.y = angle;
+    if (curr.name === "lid") {
+      curr.position.set(x, y+5, z);
+      curr.translateZ(-7);
+    } else if (curr.name === "chest") {
+      curr.position.set(x, y, z);
+    }
+    scene.add(curr);
   });
 }
 
