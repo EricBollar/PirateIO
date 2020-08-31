@@ -3,7 +3,7 @@ import { startRendering, stopRendering } from './render';
 import { startCapturingInput, stopCapturingInput } from './input';
 import { downloadAssets } from './assets';
 import { initState } from './state';
-import { setLeaderboardHidden } from './leaderboard';
+import { setLeaderboardHidden, unableToJoin } from './leaderboard';
 
 // I'm using a tiny subset of Bootstrap here for convenience - there's some wasted CSS,
 // but not much. In general, you should be careful using Bootstrap because it makes it
@@ -20,6 +20,7 @@ Promise.all([
   connect(onGameOver),
   downloadAssets(),
 ]).then(() => {
+  unableToJoin();
   playMenu.classList.remove('hidden');
   usernameInput.focus();
   playButton.onclick = () => {

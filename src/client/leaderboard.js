@@ -28,3 +28,7 @@ export function setLeaderboardHidden(hidden) {
     leaderboard.classList.remove('hidden');
   }
 }
+
+export function unableToJoin() {
+  document.getElementById("unabletojoin").classList.add("hidden");
+}

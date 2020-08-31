@@ -45,7 +45,9 @@ io.on('connection', socket => {
 const game = new Game();
 
 function joinGame(username) {
-  game.addPlayer(this, username);
+  if (Object.keys(game.players).length < 2) {
+    game.addPlayer(this, username);
+  }
 }
 
 function handleShipTurnRight(bool) {

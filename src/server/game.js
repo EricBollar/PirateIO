@@ -71,13 +71,13 @@ class Game {
       }
       this.cannonballs.forEach(cannonball => {
         if (cannonball.distanceTo(player.x, player.z) <= 15*player.scale && cannonball.parentID !== player.id) {
-          player.lowerHealth(10);
+          player.lowerHealth(player.gold / 3 + 1);
           cannonballsToRemove.push(cannonball);
         }
       })
       this.chests.forEach(chest => {
         if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
-          player.gold += 50;
+          player.gold += 20;
           chestsToRemove.push(chest);
         }
       })
@@ -95,7 +95,7 @@ class Game {
     this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
 
     this.cannonballs.forEach(cannonball => {
-      if (cannonball.y < -1) {
+      if (cannonball.y < -5) {
         cannonballsToRemove.push(cannonball);
       } else {
         cannonball.update(dt);
@@ -115,6 +115,10 @@ class Game {
     } else {
       this.shouldSendUpdate = true;
     }
+  }
+
+  getError() {
+
   }
 
   getLeaderboard() {

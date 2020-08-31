@@ -54,9 +54,8 @@ class Player extends ObjectClass {
 
   update(dt) {
     super.update(dt);
-    this.gold += 0.02;
-
-    this.turnAccel = 0.025 / this.scale * Math.PI / 180;
+    this.gold += 0.01;
+    this.speed = 0.75 * Math.pow(Math.E, -0.005 * this.gold);
 
     this.scale = 0.02 * (this.gold);
     if (this.scale < 1) {
@@ -68,7 +67,22 @@ class Player extends ObjectClass {
     this.camRadius = 180*this.scale - 5 * this.scale * this.scale;
 
     this.calcShipAngle();
-    this.moveForward();
+
+    if (this.x > 980 && this.angleY < Math.PI || this.x < -980 && this.angleY > Math.PI) {
+      if (this.z < 980 && this.z > -980) {
+        this.z += Math.cos(this.angleY) * this.speed;
+      }
+    } else if (this.z > 980 && this.angleY < Math.PI/2 || this.z > 980 && this.angleY > 3*Math.PI/2) {
+      if (this.x < 980 && this.x > -980) {
+        this.x += Math.sin(this.angleY) * this.speed;
+      }
+    } else if (this.z < -980 && this.angleY > Math.PI/2 && this.angleY < 3*Math.PI/2) {
+      if (this.x < 980 && this.x > -980) {
+        this.x += Math.sin(this.angleY) * this.speed;
+      }
+    } else {
+      this.moveForward();
+    }
 
     this.fireCooldown -= dt;
 
@@ -172,10 +186,10 @@ class Player extends ObjectClass {
       this.angleY += this.currTurnRate;
     } else {
       if (this.currTurnRate > 0) {
-        this.currTurnRate -= this.turnAccel;
+        this.currTurnRate -= 0.025 * Math.PI / 180;;
         this.angleY += this.currTurnRate;
       } else {
-        this.currTurnRate += this.turnAccel;
+        this.currTurnRate += 0.025 * Math.PI / 180;;
         this.angleY += this.currTurnRate;
       }
     }
@@ -183,6 +197,12 @@ class Player extends ObjectClass {
       this.angleY -= 2 * Math.PI;
     }
     this.angleZ = this.currTurnRate * 10;
+    while (this.angleY > 2 * Math.PI) {
+      this.angleY -= 2 * Math.PI;
+    }
+    while (this.angleY < 0) {
+      this.angleY += 2 * Math.PI;
+    }
   }
     
   serializeForUpdate() {

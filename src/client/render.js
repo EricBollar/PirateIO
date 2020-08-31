@@ -7,7 +7,8 @@ import { OBJLoader } from './three/examples/jsm/loaders/OBJLoader';
 import { create, isUndefined } from 'lodash';
 import { updateCamera } from './networking';
 import { Ocean } from './three/examples/jsm/misc/Ocean';
-import { Water } from './three/examples/jsm/objects/Water2'
+import { Water } from './three/examples/jsm/objects/Water2';
+import { setLeaderboardHidden } from './leaderboard';
 
 const Constants = require('../shared/constants');
 
@@ -17,7 +18,7 @@ const { PLAYER_RADIUS, PLAYER_MAX_HP, BULLET_RADIUS, MAP_SIZE } = Constants;
 const canvas = document.getElementById('game-canvas');
 var scene = new THREE.Scene();
 var renderer = new THREE.WebGLRenderer({canvas});
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);;
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
 createScene();
 
 function setCanvasDimensions() {
@@ -33,14 +34,27 @@ window.addEventListener('resize', debounce(40, setCanvasDimensions));
 var ocean;
 var objectsInSceneStart;
 var sailColor = 0xEFEFE9;
+var start = true;
 
 var oceanCount = 10;
 function render() {
   canvas.style.cursor = 'none';
   const { me, others, cannonballs, chests } = getCurrentState();
   if (!me) {
+    document.getElementById("unabletojoin").classList.remove("hidden");
+    setLeaderboardHidden(true);
+
     return;
   }
+
+  if (start) {
+    drawBeach();
+    drawHill();
+    objectsInSceneStart = scene.children.length;
+    start = false;
+  }
+  setLeaderboardHidden(false);
+  document.getElementById("unabletojoin").classList.add("hidden");
 
   if (oceanCount <= 0) {
     updateOcean(me);
@@ -61,12 +75,108 @@ function render() {
 }
 
 function init() {
+  loadBeach();
   loadWarship();
   loadLargeShip();
   loadMediumShip();
   loadSmallShip();
   loadBomb();
   loadChest();
+  loadHill();
+}
+
+function drawHill() {
+  for (var i = 0; i < 21; i++) {
+    var curr = hill.clone();
+    curr.position.set(1100, 1, -1000 + 100 * i);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 + Math.PI/2;
+    curr.rotation.z = 0;
+    curr.children[0].material = hill.children[0].material.clone();
+    curr.children[0].material.color.set(0x946833);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 21; i++) {
+    var curr = hill.clone();
+    curr.position.set(-1100, 1, -1000 + 100 * i);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 - Math.PI/2;
+    curr.rotation.z = 0;
+    curr.children[0].material = hill.children[0].material.clone();
+    curr.children[0].material.color.set(0x946833);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 21; i++) {
+    var curr = hill.clone();
+    curr.position.set(-1000 + 100 * i, 1, 1100);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12;
+    curr.rotation.z = 0;
+    curr.children[0].material = hill.children[0].material.clone();
+    curr.children[0].material.color.set(0x946833);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 21; i++) {
+    var curr = hill.clone();
+    curr.position.set(-1000 + 100 * i, 1, -1100);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 + Math.PI;
+    curr.rotation.z = 0;
+    curr.children[0].material = hill.children[0].material.clone();
+    curr.children[0].material.color.set(0x946833);
+    scene.add(curr);
+  }
+}
+
+function drawBeach() {
+  for (var i = 0; i < 41; i++) {
+    var curr = beach.clone();
+    curr.position.set(1010, 1, -1000 + 50 * i);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12;
+    curr.rotation.z = 0;
+    curr.children[0].material = beach.children[0].material.clone();
+    curr.children[0].material.color.set(0x5f7815);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 41; i++) {
+    var curr = beach.clone();
+    curr.position.set(-1010, 1, -1000 + 50 * i);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 + Math.PI;
+    curr.rotation.z = 0;
+    curr.children[0].material = beach.children[0].material.clone();
+    curr.children[0].material.color.set(0x5f7815);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 41; i++) {
+    var curr = beach.clone();
+    curr.position.set(-1000 + 50 * i, 1, 1010);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 - Math.PI/2;
+    curr.rotation.z = 0;
+    curr.children[0].material = beach.children[0].material.clone();
+    curr.children[0].material.color.set(0x5f7815);
+    scene.add(curr);
+  }
+  for (var i = 0; i < 41; i++) {
+    var curr = beach.clone();
+    curr.position.set(-1000 + 50 * i, 1, -1010);
+    curr.scale.set(2, 2, 2);
+    curr.rotation.x = 0;
+    curr.rotation.y = 17*Math.PI/12 + Math.PI/2;
+    curr.rotation.z = 0;
+    curr.children[0].material = beach.children[0].material.clone();
+    curr.children[0].material.color.set(0x5f7815);
+    scene.add(curr);
+  }
 }
 
 function createHealthBar(x, y, z, health, camX, camHeight, camZ, scale) {
@@ -110,6 +220,7 @@ function updateChests(me, chest) {
 }
 
 function createScene() {
+  renderer.setClearColor( 0xC0F22F, 1 );
   camera.far = 3000;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight - 32);
@@ -126,7 +237,8 @@ function createScene() {
   light = new THREE.DirectionalLight(0xffffff, 1.0);
   light.position.set(0, 100, 0);
   scene.add(light);
-  objectsInSceneStart = scene.children.length-1;
+
+  objectsInSceneStart = scene.children.length;
 }
 
 var chest = [];
@@ -142,6 +254,24 @@ function loadChest() {
   });
 }
 
+var beach;
+function loadBeach() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Env_Beach_04.obj', function ( object ) {
+    object.name = "beach";
+    beach = object;
+  });
+}
+
+var hill;
+function loadHill() {
+  var loader = new OBJLoader();
+	loader.load( '/assets/OBJ/SM_Env_Background_Hills_01.obj', function ( object ) {
+    object.name = "beach";
+    hill = object;
+  });
+}
+
 var bomb;
 function loadBomb() {
   var loader = new OBJLoader();
@@ -153,7 +283,6 @@ function loadBomb() {
 
 function createChest(x, y, z, angle) {
   chest.forEach(index => {
-    console.log(angle);
     var color = 0x956013;
     var curr = index.clone();
     curr.scale.set(25, 25, 25);
