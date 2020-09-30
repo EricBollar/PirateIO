@@ -45,7 +45,7 @@ io.on('connection', socket => {
 const game = new Game();
 
 function joinGame(username) {
-  if (Object.keys(game.players).length < 2) {
+  if (Object.keys(game.players).length < 10) {
     game.addPlayer(this, username);
   }
 }
