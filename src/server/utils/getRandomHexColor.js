@@ -1,4 +1,4 @@
-export function getRandomHexColor() {
+module.exports = function getRandomHexColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {

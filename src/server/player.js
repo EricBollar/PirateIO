@@ -2,12 +2,14 @@ const ObjectClass = require('./object');
 const Cannonball = require('./cannonball');
 const Chest = require('./chest');
 const Constants = require('../shared/constants');
+const getRandomHexColor = require('./utils/getRandomHexColor.js');
 
 class Player extends ObjectClass {
   constructor(id, username, x, z) {
     super(id);
     this.username = username;
     this.scale = 1;
+    this.color = getRandomHexColor();
 
     // position and rotation
     this.x = x;
@@ -228,6 +230,7 @@ class Player extends ObjectClass {
       ...(super.serializeForUpdate()),
       username: this.username,
       scale: this.scale,
+      color: this.color,
 
       // position and rotation
       x: this.x,

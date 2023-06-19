@@ -65,57 +65,53 @@ class Game {
     Object.keys(this.sockets).forEach(playerID => {
       const socket = this.sockets[playerID];
       const player = this.players[playerID];
-      const newCannonballs= player.update(dt);
-      if (newCannonballs) {
-        newCannonballs.forEach(newCannonball => {this.cannonballs.push(newCannonball)});
-      }
-      this.cannonballs.forEach(cannonball => {
-        if (cannonball.distanceTo(player.x, player.z) <= 15*player.scale && cannonball.parentID !== player.id) {
-          player.lowerHealth(player.gold / 3 + 1);
-          cannonballsToRemove.push(cannonball);
-        }
-      })
-      this.chests.forEach(chest => {
-        if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
-          player.gold += 20;
-          chestsToRemove.push(chest);
-        }
-      })
-      if (player.health <= 0) {
-        socket.emit(Constants.MSG_TYPES.GAME_OVER);
-        var newChests = player.createChest();
-        newChests.forEach(c => (this.chests.push(c)));
-        this.removePlayer(socket);
-      }
+      player.update(dt);
+      // const newCannonballs= player.update(dt);
+      // if (newCannonballs) {
+      //   newCannonballs.forEach(newCannonball => {this.cannonballs.push(newCannonball)});
+      // }
+      // this.cannonballs.forEach(cannonball => {
+      //   if (cannonball.distanceTo(player.x, player.z) <= 15*player.scale && cannonball.parentID !== player.id) {
+      //     player.lowerHealth(player.gold / 3 + 1);
+      //     cannonballsToRemove.push(cannonball);
+      //   }
+      // })
+      // this.chests.forEach(chest => {
+      //   if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
+      //     player.gold += 20;
+      //     chestsToRemove.push(chest);
+      //   }
+      // })
+      // if (player.health <= 0) {
+      //   socket.emit(Constants.MSG_TYPES.GAME_OVER);
+      //   var newChests = player.createChest();
+      //   newChests.forEach(c => (this.chests.push(c)));
+      //   this.removePlayer(socket);
+      // }
     });
 
-    this.chests.forEach(chest => {
-      chest.update(dt);
-    });
-    this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
+    // this.chests.forEach(chest => {
+    //   chest.update(dt);
+    // });
+    // this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
 
-    this.cannonballs.forEach(cannonball => {
-      if (cannonball.y < -5) {
-        cannonballsToRemove.push(cannonball);
-      } else {
-        cannonball.update(dt);
-      }
-    });
-    this.cannonballs = this.cannonballs.filter(cannonball => !cannonballsToRemove.includes(cannonball));
+    // this.cannonballs.forEach(cannonball => {
+    //   if (cannonball.y < -5) {
+    //     cannonballsToRemove.push(cannonball);
+    //   } else {
+    //     cannonball.update(dt);
+    //   }
+    // });
+    // this.cannonballs = this.cannonballs.filter(cannonball => !cannonballsToRemove.includes(cannonball));
 
     // Send a game update to each player every other time
-    if (this.shouldSendUpdate) {
-      const leaderboard = this.getLeaderboard();
-      Object.keys(this.sockets).forEach(playerID => {
-        const socket = this.sockets[playerID];
-        const player = this.players[playerID];
-        socket.emit(Constants.MSG_TYPES.GAME_UPDATE, this.createUpdate(player, leaderboard));
-      });
-      this.shouldSendUpdate = false;
-    } else {
-      this.shouldSendUpdate = true;
-    }
-  }
+    const leaderboard = this.getLeaderboard();
+    Object.keys(this.sockets).forEach(playerID => {
+      const socket = this.sockets[playerID];
+      const player = this.players[playerID];
+      socket.emit(Constants.MSG_TYPES.GAME_UPDATE, this.createUpdate(player, leaderboard));
+    });
+}
 
   getError() {
 
