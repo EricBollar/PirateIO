@@ -15,7 +15,7 @@ function downloadAsset(assetName) {
       assets[assetName] = asset;
       resolve();
     };
-    asset.src = `/assets/${assetName}`;
+    asset.src = `/${assetName}`;
   });
 }
 

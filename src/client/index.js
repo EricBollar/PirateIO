@@ -30,6 +30,7 @@ Promise.all([
     background.classList.add('hidden');
     initState();
     startCapturingInput();
+    
     startRendering();
     setLeaderboardHidden(false);
   };
