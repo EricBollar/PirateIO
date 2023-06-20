@@ -4,7 +4,9 @@ const Constants = require('../shared/constants');
 
 class Cannonball extends ObjectClass {
   constructor(parentID, startX, startZ, speed, shipSpeed, dir, angle, adjust, shipScale) {
-    super(shortid());
+    const myId = shortid();
+    super(myId);
+    this.id = myId;
     this.parentID = parentID;
     this.dir = dir;
     this.startX = startX;
@@ -47,7 +49,8 @@ class Cannonball extends ObjectClass {
       x: this.x,
       y: this.y,
       z: this.z,
-      radius: this.radius,
+      id: this.id,
+      radius: this.radius
     };
   }
 }

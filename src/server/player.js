@@ -37,13 +37,14 @@ class Player extends ObjectClass {
     this.camTurningRight = false,
     
     // movement speed
-    this.speed = 0.8,
+    this.speed = 0,
 
     // cannon related
     this.cannonSpeed = 1,
     this.reloadTime = 1,
     this.fireCooldown = 0,
     this.fire = false,
+    this.cannonballs = [],
 
     // other
     this.health = 100,
@@ -57,36 +58,37 @@ class Player extends ObjectClass {
 
   update(dt) {
     super.update(dt);
-    // this.gold += 0.01;
-    // this.speed = 0.75 * Math.pow(Math.E, -0.005 * this.gold);
+    
+    this.updateAttributes(dt);
 
-    // this.scale = 0.02 * (this.gold);
-    // if (this.scale < 1) {
-    //   this.scale = 1;
-    // } else if (this.scale > 4) {
-    //   this.scale = 4;
-    // }
-    // this.camHeight = 120*this.scale - 5 * this.scale * this.scale; 
-    // this.camRadius = 180*this.scale - 5 * this.scale * this.scale;
-
-    // this.calcShipAngle();
-
+    // movement and rotation
     this.handleMovement();
     this.handleCameraRotation();
     this.calcShipAngle();
 
-    // this.fireCooldown -= dt;
+    this.cannonballs = this.handleFire(dt);
+  }
 
-    // if (this.fire) {
-    //   this.fire = false;
-    //   var cannonballs = [];
-    //   //if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
-    //     cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
-    //     cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
-    //     cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
-    //     cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
-    //     cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
-    //     cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+  getCannonballs() {
+    if (!this.cannonballs) {
+      return [];
+    }
+    return this.cannonballs;
+  }
+
+  handleFire(dt) {
+    this.fireCooldown -= dt;
+
+    if (this.fire) {
+      this.fire = false;
+      var cannonballs = [];
+      // if (Math.abs(this.currTurnRate) <= 0.2 * Math.PI/180) {
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * -5*this.scale, this.z + Math.cos(this.angleY) * -5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, true, this.scale));
+        cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, true, this.scale));
       // } else {
       //   cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false));
       //   cannonballs.push(new Cannonball(this.id, this.x, this.z, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false));
@@ -95,11 +97,31 @@ class Player extends ObjectClass {
       //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, Math.PI/2, false, this.scale));
       //   cannonballs.push(new Cannonball(this.id, this.x + Math.sin(this.angleY) * 5*this.scale, this.z + Math.cos(this.angleY) * 5*this.scale, this.cannonSpeed, this.speed, this.angleY, -Math.PI/2, false, this.scale));
       // }
-    //   return cannonballs;
-    // }
+      return cannonballs;
+    }
+  }
 
-    
-    return null;
+  updateAttributes(dt) {
+    this.gold += dt;
+    this.speed = 1.75 * Math.pow(Math.E, -0.005 * this.gold);
+    this.scale = 0.04 * (this.gold);
+    if (this.scale < 1) {
+      this.scale = 1;
+    } else if (this.scale > 5) {
+      this.scale = 5;
+    }
+
+    this.camY = 100*this.scale + 10 * this.scale * this.scale; 
+    this.camRadius = 120*this.scale;
+
+    const maxTurnAcceleration = 0.075;
+    const minTurnAcceleration = 0.0002;
+    this.turnAcceleration = (maxTurnAcceleration - 0.01 * this.scale) * Math.PI / 180;
+    if (this.turnAcceleration < minTurnAcceleration) {
+      this.turnAcceleration = minTurnAcceleration;
+    }
+
+    this.maxTurnRate = Math.PI / 180 - 0.0001 * this.scale * this.scale;
   }
 
   handleCameraRotation() {
@@ -118,10 +140,10 @@ class Player extends ObjectClass {
     this.camZ = Math.cos(this.camAngle) * -this.camRadius + this.z;
   }
 
-  calcBob(t) {
-    this.y = Math.sin(t) - 3;
-    this.angleX = -Math.sin(t+2) * 2 * Math.PI/180;
-  }
+  // calcBob(t) {
+  //   this.y -= Math.sin(t)*0.01;
+  //   this.angleX = -Math.sin(t+2) * 2 * Math.PI/180;
+  // }
 
   fireCannon() {
     if (this.fireCooldown <= 0) {
@@ -163,30 +185,36 @@ class Player extends ObjectClass {
     this.health -= amt;
   }
 
-  
-
   handleMovement() {
-    if (this.x > 980 && this.angleY < Math.PI || this.x < -980 && this.angleY > Math.PI) {
-      if (this.z < 980 && this.z > -980) {
-        this.z += Math.cos(this.angleY) * this.speed;
-      }
-    } else if (this.z > 980 && this.angleY < Math.PI/2 || this.z > 980 && this.angleY > 3*Math.PI/2) {
-      if (this.x < 980 && this.x > -980) {
-        this.x += Math.sin(this.angleY) * this.speed;
-      }
-    } else if (this.z < -980 && this.angleY > Math.PI/2 && this.angleY < 3*Math.PI/2) {
-      if (this.x < 980 && this.x > -980) {
-        this.x += Math.sin(this.angleY) * this.speed;
-      }
-    } else {
-      this.x += Math.sin(this.angleY) * this.speed;
-      this.z += Math.cos(this.angleY) * this.speed;
+    const mapRadius = 1000;
+    let localAngle = this.angleY;
+    while (localAngle > 2 * Math.PI) {
+      localAngle -= 2 * Math.PI;
+    }
+    while (localAngle < 0) {
+      localAngle += 2 * Math.PI;
+    }
+
+    let moveX = true;
+    let moveZ = true;
+    // edges on X-axis
+    if (this.x > mapRadius && localAngle < Math.PI || this.x < -mapRadius && localAngle > Math.PI) {
+        moveX = false;
+    } 
+    // edges on Z-axis
+    if (this.z > mapRadius && (localAngle < Math.PI/2 || localAngle > 3*Math.PI/2) 
+        || this.z < -mapRadius && (localAngle > Math.PI/2 && localAngle < 3*Math.PI/2)) {
+      moveZ = false;
+    }
+    if (moveX) {
+      this.x += Math.sin(localAngle) * this.speed;
+    }
+    if (moveZ) {
+      this.z += Math.cos(localAngle) * this.speed;
     }
   }
 
   calcShipAngle() {
-    let prev = {x: this.angleX, y: this.angleY, z: this.angleZ};
-
     // turning left
     if (this.shouldTurnLeft && !this.shouldTurnRight) {
       // if still increasing turn
@@ -216,13 +244,6 @@ class Player extends ObjectClass {
       }
     }
     this.angleZ = this.currTurnRate * 10;
-    if (Math.abs(this.angleX - prev.x) > 1 || Math.abs(this.angleY - prev.y) > 1 || Math.abs(this.angleZ - prev.z) > 1) {
-      console.log(this.angleX, this.angleY, this.angleZ);
-      console.log("prev below, actual above");
-      console.log(prev.x, prev.y, prev.z);
-      console.log(this.currTurnRate, "currTurnRate");
-      console.log(this.turnAcceleration, "turnAccelration");
-    }
   }
     
   serializeForUpdate() {
@@ -265,6 +286,7 @@ class Player extends ObjectClass {
       reloadTime: this.reloadTime,
       fireCooldown: this.fireCooldown,
       fire: this.fire,
+      cannonballs: this.cannonballs,
 
       // other
       health: this.health,
