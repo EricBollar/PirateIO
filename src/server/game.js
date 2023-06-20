@@ -77,7 +77,6 @@ class Game {
       }
       this.cannonballs.forEach(cannonball => {
         if (cannonball.distanceTo(player.x, player.z) <= 15*player.scale && cannonball.parentID !== player.id) {
-          console.log(this.players[cannonball.parentID].gold / 3 + 1);
           player.lowerHealth(this.players[cannonball.parentID].gold / 3 + 1);
           cannonballsToRemove.push(cannonball);
         }

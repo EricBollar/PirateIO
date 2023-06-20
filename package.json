@@ -41,8 +41,5 @@
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "webpack-cli": "^3.3.11",
     "webpack-merge": "^4.2.2"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }

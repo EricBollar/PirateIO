@@ -89,7 +89,6 @@ function render() {
     return;
   }
   
-  console.log(scene.children);
   let cannonballsToRender = [];
   if (cannonballs.length > 0) {
     cannonballs.forEach(ball => {

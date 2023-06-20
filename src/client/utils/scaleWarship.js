@@ -5,7 +5,6 @@ export function scaleWarship(shipObjectsToDraw, scale, health) {
         if (shipPart.name.includes("label")) {
             scaleLabel(shipPart, scale);
         } else if (shipPart.name.includes("healthbar")) {
-            console.log(health);
             shipPart.scale.set(health/100.0, scale, 1);
         } else {
             shipPart.scale.set(scale, scale, scale);
