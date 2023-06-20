@@ -107,8 +107,8 @@ class Player extends ObjectClass {
     this.scale = 0.04 * (this.gold);
     if (this.scale < 1) {
       this.scale = 1;
-    } else if (this.scale > 5) {
-      this.scale = 5;
+    } else if (this.scale > 4) {
+      this.scale = 4;
     }
 
     this.camY = 100*this.scale + 10 * this.scale * this.scale; 

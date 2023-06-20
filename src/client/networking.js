@@ -31,7 +31,6 @@ export const connect = onGameOver => (
 export const play = username => {
   socket.emit(Constants.MSG_TYPES.JOIN_GAME, username);
 };
-
 export const shipTurnLeft = throttle(20, bool => {
   socket.emit(Constants.MSG_TYPES.SHIPTURNLEFT, bool);
 });

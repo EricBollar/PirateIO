@@ -36,10 +36,19 @@ function hexToRgb(hex) {
     } : null;
   }
 
-export function updateMinimap(ctx, ship) {
+export function updateMinimap(ctx, ship, isMe) {
     const convertedScale = ship.scale * 4;
     const convertedX = (ship.x + 1000)/10.0 + 30 - convertedScale/2.0;
     const convertedZ = (ship.z + 1000)/10.0 + 30 - convertedScale/2.0;
+
+    if (isMe) {
+        // ctx.fillStyle = "rgba(" + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ", " + Math.floor(Math.random() * 255) + ")";
+        // ctx.beginPath();
+        // ctx.roundRect(convertedX-1, convertedZ-1, convertedScale+2, convertedScale+2, (convertedScale+2)/2);
+        // ctx.stroke();
+        // ctx.fill();
+    }
+
     const color = hexToRgb(ship.color);
     ctx.fillStyle = "rgba(" + color.r + ", " + color.g + ", " + color.b + ", 1)";
     ctx.beginPath();

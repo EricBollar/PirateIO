@@ -186,7 +186,11 @@ function drawShips(allShips, me) {
       rotateWarship(shipObjectsToDraw, ship.angleX, ship.angleY, ship.angleZ, me.camX, me.camY, me.camZ);
       scaleWarship(shipObjectsToDraw, ship.scale, ship.health);
       let ship2D = {x: ship.x, z: ship.z, scale: ship.scale, color: removeNan(ship.color) };
-      updateMinimap(minimap, ship2D);
+      if (ship.id === me.id) {
+        updateMinimap(minimap, ship2D, true);
+      } else {
+        updateMinimap(minimap, ship2D, false);
+      }
     }
   });
   return shipIdsToRender;

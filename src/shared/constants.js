@@ -21,5 +21,6 @@ module.exports = Object.freeze({
     CAMTURNRIGHT: 'cameraturnright',
     CAMTURNLEFT: 'cameraturnleft',
     GAME_OVER: 'dead',
+    INPUT_UPDATE: 'input_update'
   },
 });
