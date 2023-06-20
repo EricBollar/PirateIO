@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  <title>PirateShips.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="/assets/pirateIcon.png">
+  <meta property="description" content="big ship bout">
+  <meta property="og:title" content="Pirate.io Game">
+  <meta property="og:description" content="description 2">
+  <meta property="og:image" content="/assets/icon1200.png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-58664433-3"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-58664433-3');
+  </script>
+<link href="game.bfcd724186db7983c9fe.css" rel="stylesheet"></head>
+<body>
+  <canvas id="game-canvas"></canvas>
+  <img id="background" src="/UI/background.jpeg" style="max-width: 100%;">
+  <div id="play-menu" class="card" style="z-index: 1;">
+    <div class="card-body">
+      <h1>PirateShips.io</h1>
+      <input type="text" id="username-input" class="form-control" placeholder="Username" style="border-radius: 10px; border: 2px solid #98948e;">
+      <button class="btn btn-success" id="play-button" type="button" id="button-addon2" style="width: 100%;">PLAY</button>
+      <p>
+        <br />
+      <b>Controls</b> <br/>
+      Turn Ship - A, D <br/>
+      Turn Camera - J, L <br/>
+      Fire Cannons - SPACE
+      </br></br>
+        See the source code on <a href="https://github.com/EricBollar/PirateIO" target="_blank">Github</a>.
+        <br />
+        Created by <a href="http://ericbollar.com" target="_blank">Eric Bollar</a>.
+      </p>
+    </div>
+  </div>
+  <div id="leaderboard" class="hidden" style="background-color: #343A40;">
+    <h5 style="color: white;">Leaderboard</h5>
+    <table class="table table-borderless table-dark">
+      <tr><td></td><td></td></tr>
+      <tr><td></td><td></td></tr>
+      <tr><td></td><td></td></tr>
+      <tr><td></td><td></td></tr>
+      <tr><td></td><td></td></tr>
+    </table>
+  </div>
+  <canvas id="minimap" style="position: absolute; display: block; left: 25px; bottom: 25px;"></canvas>
+  <div id="disconnect-modal" class="hidden">
+    <div>
+      <h2>Disconnected from Server</h2>
+      <hr />
+      <button id="reconnect-button">RECONNECT</button>
+    </div>
+  </div>
+  <div class="card" id="unabletojoin" style="text-align: center; position: absolute; width: 300px; bottom: 50%; left: 50%; transform: translate(-50%, 0); display: none;">
+    <div class="card-body">
+      <h2>Trying to Join...</h2>
+      </br>
+      <h5>If you do not join within a few minutes, the maximum player count of 10 may have been reached.</h5>
+    </div>
+  </div>
+<script type="text/javascript" src="game.c6132750a799f9be9c20.js"></script></body>
+</html>
