@@ -35,7 +35,7 @@ class Cannonball extends ObjectClass {
       this.x += Math.sin(this.dir) * this.speed * this.shipSpeed;
       this.z += Math.cos(this.dir) * this.speed * this.shipSpeed;
     }
-    this.y = -(1.0/(40*this.shipScale)) * Math.pow(this.parabolaX - 25*this.shipScale/4, 2) + 8;
+    this.y = -(1.0/(40*this.speed)) * Math.pow(this.parabolaX - 25*this.speed/4, 2) + 8;
     this.parabolaX += this.speed;
   }
 
