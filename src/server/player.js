@@ -197,8 +197,9 @@ class Player extends ObjectClass {
 
     let moveX = true;
     let moveZ = true;
-    // edges on X-axis
-    if (this.x > mapRadius && localAngle < Math.PI || this.x < -mapRadius && localAngle > Math.PI) {
+    // edges on X-axisç
+    if (this.x > mapRadius && localAngle < Math.PI 
+      || this.x < -mapRadius && localAngle > Math.PI) {
         moveX = false;
     } 
     // edges on Z-axis
