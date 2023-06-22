@@ -14,6 +14,7 @@ import { Label } from './utils/Label';
 import { Healthbar } from './utils/Healthbar';
 import { Minimap } from './utils/minimap';
 import { Cannonball } from './utils/Cannonball';
+import { Chest } from './utils/Chest';
 
 // get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
@@ -31,25 +32,27 @@ function setCanvasDimensions() {
   const scaleRatio = Math.max(1, 800 / window.innerWidth);
   canvas.width = scaleRatio * window.innerWidth;
   canvas.height = scaleRatio * window.innerHeight;
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 // load necessary files
 let assetsLoaded = false;
 let shipFiles;
 let cannonballFiles;
+let chestFiles;
 let rockFiles;
 (async () => {
   const files = await loadFiles();
   shipFiles = files.shipFiles;
   cannonballFiles = files.cannonballFiles;
+  chestFiles = files.chestFiles;
   rockFiles = files.rockFiles;
 
   assetsLoaded = true;
-  return {shipFiles: shipFiles};
 })();
 
 // create ocean water
-const ocean = new Ocean(2010);
+const ocean = new Ocean(3000);
 scene.add( ocean.getObj() );
 
 // create Stats
@@ -69,6 +72,7 @@ function render() {
   } else if (start) { // first frame
     // showMinimap(true);
     start = false;
+    makeBorders();
   }
 
   // calculate dt
@@ -83,9 +87,9 @@ function render() {
   const { me, allShips, cannonballs, chests } = getCurrentState();
 
   // if couldn't join
+  setLeaderboardHidden(!me);
   if (!me) {
     document.getElementById("unabletojoin").style.display = "";
-    setLeaderboardHidden(true);
     return;
   }
   
@@ -113,10 +117,36 @@ function render() {
     });
   }
 
+  let chestsToRender = [];
+  if (chests.length > 0) {
+    chests.forEach(chest => {
+
+      const chestIdClean = removeNan(chest.id);
+      chestsToRender.push(chestIdClean);
+
+      let exists = false;
+      for (const [key, obj] of Object.entries(objsInScene)) {
+        if (obj instanceof Chest && obj.getId().includes(chestIdClean)) {
+          console.log(scene.children);
+          obj.position(chest.x, chest.y, chest.z);
+          exists = true;
+        }
+      }
+      if (!exists) {
+        const newChest = new Chest(chestFiles, chestIdClean);
+        newChest.position(0, 10, 0);
+        objsInScene["chest"+chestIdClean] = newChest;
+        scene.add(newChest.getChest());
+        scene.add(newChest.getLid());
+      }
+
+    });
+  }
+
   // render all ships in scene
   let shipIdsToRender = renderShips(allShips, me);
   // remove any ships as necessary
-  removeShips(shipIdsToRender, cannonballsToRender);
+  removeShips(shipIdsToRender, cannonballsToRender, chestsToRender);
 
   // position camera
   camera.position.set(me.camX, me.camY, me.camZ);
@@ -228,7 +258,7 @@ function renderShips(allShips, me) {
 }
 
 // remove any ships that have died/dc'd
-function removeShips(shipIdsToRender, cannonballsToRender) {
+function removeShips(shipIdsToRender, cannonballsToRender, chestsToRender) {
   if (!shipIdsToRender) {
     return;
   }
@@ -237,6 +267,12 @@ function removeShips(shipIdsToRender, cannonballsToRender) {
     if (obj instanceof Cannonball) {
       cannonballsToRender.forEach(id => {
         if (obj.getId().includes(id)) {
+          remove = false;
+        }
+      })
+    } else if (obj instanceof Chest) {
+      chestsToRender.forEach(id => {
+        if (key.includes(id)) {
           remove = false;
         }
       })
@@ -256,9 +292,93 @@ function removeShips(shipIdsToRender, cannonballsToRender) {
         obj.getParts().forEach(part => {
           scene.remove(part);
         })
+      } else if (obj instanceof Chest) {
+        scene.remove(obj.getChest());
+        scene.remove(obj.getLid());
       } else {
         scene.remove(obj.getObj());
-        delete objsInScene[key];
+      }
+      delete objsInScene[key];
+    }
+  }
+}
+
+function makeBorders() {
+    const colors = [0x956013, 0xBA7B00, 0xCBA254, 0xFFB21C, 0xCB7400, 0xFFBE67, 0xE2860B];
+
+    for (let m = 1; m < 5; m++) {
+      for (let i = -2; i < 102; i++) {
+        var rockIndex = Math.floor(Math.random() * 11);
+        var rotation = Math.random() * Math.PI;
+        var scale = Math.random() * 10 * m;
+        if (scale < 4) {
+          scale = 4;
+        }
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var curr = rockFiles[rockIndex].clone();
+        curr.scale.set(scale, scale, scale);
+        curr.children[0].material = rockFiles[rockIndex].children[0].material.clone();
+        curr.children[0].material.color.set(color);
+        curr.position.set(-1025 - scale * scale - m * 3, 3, -1000 + 20 * i);
+        curr.rotation.y = rotation;
+        scene.add(curr);
+      }
+    }
+
+    for (let m = 1; m < 5; m++) {
+      for (let i = -2; i < 102; i++) {
+        var rockIndex = Math.floor(Math.random() * 11);
+        var rotation = Math.random() * Math.PI;
+        var scale = Math.random() * 10 * m;
+        if (scale < 4) {
+          scale = 4;
+        }
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var curr = rockFiles[rockIndex].clone();
+        curr.scale.set(scale, scale, scale);
+        curr.children[0].material = rockFiles[rockIndex].children[0].material.clone();
+        curr.children[0].material.color.set(color);
+        curr.position.set(1025 + scale * scale + m * 3, 3, -1000 + 20 * i);
+        curr.rotation.y = rotation;
+        scene.add(curr);
+      }
+    }
+
+    for (let m = 1; m < 5; m++) {
+      for (let i = -2; i < 102; i++) {
+        var rockIndex = Math.floor(Math.random() * 11);
+        var rotation = Math.random() * Math.PI;
+        var scale = Math.random() * 10 * m;
+        if (scale < 4) {
+          scale = 4;
+        }
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var curr = rockFiles[rockIndex].clone();
+        curr.scale.set(scale, scale, scale);
+        curr.children[0].material = rockFiles[rockIndex].children[0].material.clone();
+        curr.children[0].material.color.set(color);
+        curr.position.set(-1000 + 20 * i, 3, -1025 - scale * scale - m * 3);
+        curr.rotation.y = rotation;
+        scene.add(curr);
+      }
+    }
+
+    for (let m = 1; m < 25; m++) {
+      for (let i = -2; i < 102; i++) {
+        var rockIndex = Math.floor(Math.random() * 11);
+        var rotation = Math.random() * Math.PI;
+        var scale = Math.random() * 10 * m;
+        if (scale < 4) {
+          scale = 4;
+        }
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var curr = rockFiles[rockIndex].clone();
+        curr.scale.set(scale, scale, scale);
+        curr.children[0].material = rockFiles[rockIndex].children[0].material.clone();
+        curr.children[0].material.color.set(color);
+        curr.position.set(-1000 + 20 * i, 3, 1025 + scale * scale + m * 3);
+        curr.rotation.y = rotation;
+        scene.add(curr);
       }
     }
   }
@@ -287,4 +407,3 @@ function removeShips(shipIdsToRender, cannonballsToRender) {
   //     scene.remove(obj);
   //   }
   // });
-}

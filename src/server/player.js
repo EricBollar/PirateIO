@@ -162,8 +162,8 @@ class Player extends ObjectClass {
     var ran = 0;
     for (let i = this.gold+50; i > 0; i -= 50) {
       ran += 15;
-      if (ran > 60) {
-        ran = 60;
+      if (ran > 30) {
+        ran = 30;
       }
       chests.push(new Chest(this.id, this.x+Math.random()*ran, this.z+Math.random()*ran));
     }

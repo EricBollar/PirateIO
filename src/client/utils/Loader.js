@@ -6,17 +6,41 @@ export async function loadFiles() {
     const loader = new OBJLoader();
     const shipFiles = await loadShip(loader);
     const cannonballFiles = await loadCannonball(loader);
-    const rockFiles = await loadRock(loader);
+    const chestFiles = await loadChest(loader);
+    const rockFiles = await loadRocks(loader);
     
     console.log("Assets Loaded!");
-    return {shipFiles, cannonballFiles, rockFiles};
+    return {shipFiles, cannonballFiles, chestFiles, rockFiles};
 }
 
-async function loadRock(loader) {
-    return await loader.loadAsync( '/OBJ/SM_Env_Rock_Large_04.obj', function ( object ) {
+async function loadRocks(loader) {
+    let rocks = [];
+    for (let i = 1; i <= 11; i++) {
+        rocks.push(await loader.loadAsync( '/OBJ/SM_Env_Rock_Large_0'+i+'.obj', function ( object ) {
+            return object;
+        }));
+    }
+    return rocks;
+}
+
+async function loadChest(loader) {
+    let chest = {lid: undefined, chest: undefined};
+    chest.lid = await loader.loadAsync('/OBJ/SM_Prop_Chest_Lid_03.obj', function ( object ) {
         return object;
     });
+    chest.chest = await loader.loadAsync('/OBJ/SM_Prop_Chest_03.obj', function ( object ) {
+        return object;
+    });
+    chest.lid.name = "lid";
+    chest.chest.name = "chest";
+    return chest;
 }
+
+// async function loadRock(loader) {
+//     return await loader.loadAsync( '/OBJ/SM_Env_Rock_Large_04.obj', function ( object ) {
+//         return object;
+//     });
+// }
 
 async function loadCannonball(loader) {
     return await loader.loadAsync( '/OBJ/SM_Prop_CannonBalls_01.obj', function ( object ) {

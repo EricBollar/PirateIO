@@ -1,3 +1,4 @@
+import { startGame } from './index';
 import { shipTurnLeft, shipTurnRight, camTurnRight, camTurnLeft, shipFireCannon } from './networking';
 
 function keyPress() {
@@ -26,6 +27,12 @@ function keyUp() {
   }
 }
 
+function keyPressEnter() {
+  if (event.keyCode === 13) {
+    startGame();
+  }
+}
+
 function mouseMove() {
   //updateCamera(event.x);
 }
@@ -39,6 +46,14 @@ function onScroll() {
   } else if (document.body.scrollTop < prevScroll) {
 
   }
+}
+
+export function startCapturingEnter() {
+  window.addEventListener('keydown', keyPressEnter);
+}
+
+export function stopCapturingEnter() {
+  window.removeEventListener('keydown', keyPressEnter);
 }
 
 export function startCapturingInput() {

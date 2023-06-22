@@ -61,7 +61,7 @@ class Game {
 
     // Update each player
     const cannonballsToRemove = [];
-    // const chestsToRemove = [];
+    const chestsToRemove = [];
     Object.keys(this.sockets).forEach(playerID => {
       const socket = this.sockets[playerID];
       const player = this.players[playerID];
@@ -77,31 +77,36 @@ class Game {
       }
       this.cannonballs.forEach(cannonball => {
         if (cannonball.distanceTo(player.x, player.z) <= 15*player.scale && cannonball.parentID !== player.id) {
-          player.lowerHealth(this.players[cannonball.parentID].gold / 3 + 1);
+          let decrease = (this.players[cannonball.parentID].gold / 3 + 1)
+          - (this.players[player.id].gold / 3 + 1);
+          if (decrease < 10) {
+            decrease = 10;
+          }
+          player.lowerHealth(decrease);
           cannonballsToRemove.push(cannonball);
         }
       })
-      // this.chests.forEach(chest => {
-      //   if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
-      //     player.gold += 20;
-      //     chestsToRemove.push(chest);
-      //   }
-      // })
+      this.chests.forEach(chest => {
+        if (chest.distanceTo(player.x, player.z) <= 15*player.scale) {
+          player.gold += 20;
+          chestsToRemove.push(chest);
+        }
+      })
       if (player.health <= 0) {
         socket.emit(Constants.MSG_TYPES.GAME_OVER);
-        // var newChests = player.createChest();
-        // newChests.forEach(c => (this.chests.push(c)));
+        var newChests = player.createChest();
+        newChests.forEach(c => (this.chests.push(c)));
         this.removePlayer(socket);
       }
     });
 
-    // this.chests.forEach(chest => {
-    //   chest.update(dt);
-    // });
-    // this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
+    this.chests.forEach(chest => {
+      chest.update(dt);
+    });
+    this.chests = this.chests.filter(chest => !chestsToRemove.includes(chest));
 
     this.cannonballs.forEach(cannonball => {
-      if (cannonball.y < -2 * cannonball.radius) {
+      if (cannonball.y < 0) {
         cannonballsToRemove.push(cannonball);
       } else {
         cannonball.update(dt);

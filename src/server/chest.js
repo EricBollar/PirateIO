@@ -4,7 +4,9 @@ const Constants = require('../shared/constants');
 
 class Chest extends ObjectClass {
   constructor(parentID, x, z) {
-    super(shortid());
+    const myId = shortid()
+    super(myId);
+    this.id = myId;
     this.parentID = parentID;
     this.gold = 100;
     this.x = x;
@@ -35,6 +37,7 @@ class Chest extends ObjectClass {
       x: this.x,
       y: this.y,
       z: this.z,
+      id: this.id,
       gold: this.gold,
       angle: this.angle,
     };
