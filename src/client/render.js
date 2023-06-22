@@ -52,7 +52,7 @@ let rockFiles;
 })();
 
 // create ocean water
-const ocean = new Ocean(3000);
+const ocean = new Ocean(10000);
 scene.add( ocean.getObj() );
 
 // create Stats
