@@ -307,7 +307,7 @@ function makeBorders() {
     const colors = [0x956013, 0xBA7B00, 0xCBA254, 0xFFB21C, 0xCB7400, 0xFFBE67, 0xE2860B];
 
     for (let m = 1; m < 5; m++) {
-      for (let i = -2; i < 102; i++) {
+      for (let i = -10; i < 110; i++) {
         var rockIndex = Math.floor(Math.random() * 11);
         var rotation = Math.random() * Math.PI;
         var scale = Math.random() * 10 * m;
@@ -326,7 +326,7 @@ function makeBorders() {
     }
 
     for (let m = 1; m < 5; m++) {
-      for (let i = -2; i < 102; i++) {
+      for (let i = -10; i < 110; i++) {
         var rockIndex = Math.floor(Math.random() * 11);
         var rotation = Math.random() * Math.PI;
         var scale = Math.random() * 10 * m;
@@ -345,7 +345,7 @@ function makeBorders() {
     }
 
     for (let m = 1; m < 5; m++) {
-      for (let i = -2; i < 102; i++) {
+      for (let i = -10; i < 110; i++) {
         var rockIndex = Math.floor(Math.random() * 11);
         var rotation = Math.random() * Math.PI;
         var scale = Math.random() * 10 * m;
@@ -364,7 +364,7 @@ function makeBorders() {
     }
 
     for (let m = 1; m < 25; m++) {
-      for (let i = -2; i < 102; i++) {
+      for (let i = -10; i < 110; i++) {
         var rockIndex = Math.floor(Math.random() * 11);
         var rotation = Math.random() * Math.PI;
         var scale = Math.random() * 10 * m;
