@@ -103,7 +103,12 @@ class Player extends ObjectClass {
 
   updateAttributes(dt) {
     this.gold += dt;
+
     this.speed = 1.75 * Math.pow(Math.E, -0.005 * this.gold);
+    if (this.speed < 0.7) {
+      this.speed = 0.7;
+    }
+
     this.scale = 0.04 * (this.gold);
     if (this.scale < 1) {
       this.scale = 1;
@@ -116,7 +121,7 @@ class Player extends ObjectClass {
 
     const maxTurnAcceleration = 0.075;
     const minTurnAcceleration = 0.0002;
-    this.turnAcceleration = (maxTurnAcceleration - 0.01 * this.scale) * Math.PI / 180;
+    this.turnAcceleration = (maxTurnAcceleration - 0.03 * this.scale) * Math.PI / 180;
     if (this.turnAcceleration < minTurnAcceleration) {
       this.turnAcceleration = minTurnAcceleration;
     }
