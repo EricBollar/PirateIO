@@ -1,4 +1,6 @@
 [![Watch the video]]([https://youtu.be/T-D1KVIuvjA](https://www.youtube.com/watch?v=cn3ZHPAdLyk&ab_channel=EricBollar))
+# DEMO VIDEO
+[![Watch the video](https://img.youtube.com/vi/cn3ZHPAdLyk&ab_channel=EricBollar/maxresdefault.jpg)](https://youtu.be/cn3ZHPAdLyk&ab_channel=EricBollar)
 
 # PirateIO
 A browser game built with Node and AWS that allows players to control a randomly colored pirate ship and fire cannonballs at other players. Ocean is deprecated as of Aug 2022. Online version is shut down due to cost.
