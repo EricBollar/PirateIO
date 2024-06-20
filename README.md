@@ -1,5 +1,4 @@
-[![Watch the video]]([https://youtu.be/T-D1KVIuvjA](https://www.youtube.com/watch?v=cn3ZHPAdLyk&ab_channel=EricBollar))
-# DEMO VIDEO
+# DEMO VIDEO (Click to play)
 [![Watch the video](https://img.youtube.com/vi/cn3ZHPAdLyk/maxresdefault.jpg)](https://youtu.be/cn3ZHPAdLyk&ab_channel=EricBollar)
 
 # PirateIO
